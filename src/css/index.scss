@@ -1,0 +1,15 @@
+@import "./colors/maincolors.scss";
+@import "./mainfonts/mainfonts.scss";
+
+body {
+  margin: 0;
+  color : $mainfontcolor;
+
+  font-family: $mainfontfamily;
+}
+
+.cryptotrackercontainer {
+  background: $bgcolor;
+  height    : 100vh;
+  width     : 100vw;
+}
