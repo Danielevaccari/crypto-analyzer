@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import analyticsUtility from '../../../analyticsUtility';
+
 const HighestVolumeResult = props => {
 
   const handle = () => {
     if (props.dataGranularity === "1hourgranularity") {
       console.log("hourly")
-      console.log(analyticsUtility.trimHourlyGranularityToDailyGranularity(props.volumeData))
-      props.setresult(analyticsUtility.getHighestvolumeAndDate(analyticsUtility.trimHourlyGranularityToDailyGranularity(props.volumeData)))
+      props.setresult(analyticsUtility.getHighestvolumeAndDate(analyticsUtility.getDailyAverageVolumeFromHourlyVolumeData(props.volumeData)))
     }
     else if (props.dataGranularity === "1daygranularity") {
       console.log("daily")
@@ -16,14 +16,13 @@ const HighestVolumeResult = props => {
       props.setresult("Check input")
     }
   }
-  console.log(props.result)
 
   useEffect(() => {
     handle()
   }, [props.volumeData])
   return (
     <>
-      <div className="cryptoAnalyticResult">Highest Volume and date: <div style={{ fontSize: ".8rem" }}>{props.result ? <span>{props.result.volume}e|{new Date(props.result.date).toISOString().substring(0, 10)}</span> : ""}</div></div>
+      <div className="cryptoAnalyticResult">Highest Volume and date: <div style={{ fontSize: ".8rem" }}>{props.result ? <span>{props.result.volume.toString().match(/.*(?=\.)/g)}e|{props.result.date ? new Date(props.result.date).toLocaleDateString().substring(0, 10) : ""}</span> : ""}</div></div>
     </>
   )
 }

@@ -9,6 +9,10 @@ const analyticsUtility = {
     return new Date(date).getTime() / 1000
   },
 
+  getDateFromUnixTime: unixtime => {
+    return new Date(unixtime).toLocaleDateString()
+  },
+
   /**
     * 
     * @param {Array} pricesData 2D array with unix time and daily price [unixtime ms, price]
@@ -98,6 +102,30 @@ const analyticsUtility = {
 
   /**
    * 
+   * @param {Array} hourlyVolumeData 2D array with unix time and hourly volume data [unixtime ms, volume data]
+   * @returns {Array} Array that contains time and daily volume average
+   * complexity = Linear in length of array
+   */
+  getDailyAverageVolumeFromHourlyVolumeData: hourlyVolumeData => {
+    let dailyVolumeAveragesWithTimes = [];
+    let temporaryAverageVolume = 0;
+    let count = 0;
+
+    hourlyVolumeData.forEach((item) => {
+      //item[1] is the volume
+      temporaryAverageVolume += item[1];
+      count += 1;
+      if (count % 24 === 0) {
+        //item[0] is the time (unix ms)
+        dailyVolumeAveragesWithTimes.push([item[0], temporaryAverageVolume / 24]);
+        temporaryAverageVolume = 0;
+      }
+    });
+    return dailyVolumeAveragesWithTimes;
+  },
+
+  /**
+   * 
    * @param {Array} volumeData 2D array with unix time and daily volume [unixtime ms, volume]
    * @returns {Array} highest Volume and date in an array [unixtime ms, highest volume]
    */
@@ -117,10 +145,48 @@ const analyticsUtility = {
     return highestVolumeAndDate;
   },
 
-  bestDayToBuyandBestDayToSell: pricesData => {
-    let dates = "Not a good time to do anything!";
+  /**
+   * 
+   * @param {Array} pricesData  2D array with unix time and daily price [unixtime ms, price]
+   * @returns {Array}  [startingDate, highestProfitSellDate, highestProfitMultiplier, holdMultiplier] 
+   * Returns the best day to buy and to sell to maximize profits given a certain date range of daily price data
+   */
+  bestDayToBuyandBestDayToSell: (pricesData) => {
+    let bestDayToBuyandSell = [undefined, undefined, 1, 1];
 
-    return dates;
+    for (let i = 0; i < pricesData.length; i++) {
+      analyticsUtility.bestDayToSell(pricesData.slice(i))[2] > bestDayToBuyandSell[2] ? bestDayToBuyandSell = analyticsUtility.bestDayToSell(pricesData.slice(i)) : console.log("heehee")
+    }
+    return bestDayToBuyandSell;
+  },
+
+  /**
+   * 
+   * @param {Array} pricesData 2D array with unix time and daily price [unixtime ms, price]
+   * @returns {Array} [startingDate, highestProfitSellDate, highestProfitMultiplier, holdMultiplier] || when no profit to be made (highestProfitMultiplier <= 1) [startingDate, 'Not a good time to sell!', 1, holdMultiplier]
+   * startingDate = unixtime ms of the first element in pricesData, 
+   * highestProfitSellDate = unixtime ms of the highest profit sell date if you bought at startingDate, 
+   * highestProfitMultiplier = If you put x money in startingDate and sell in highestProfitSellDate you get x*highestProfitMultiplier money.
+   * holdMultiplier =  If you put x money in startingDate and hold it until the last day in pricesData you get x*holdMultiplier money.
+   */
+  bestDayToSell: (pricesData) => {
+    let startingDate = undefined;
+    let highestProfitSellDate = "Not a good time to sell!";
+    let highestProfitMultiplier = 1;
+    let holdMultiplier = 1;
+    //Set the algorithm beginning day 
+    startingDate = pricesData[0][0]
+
+    for (let i = 1; i < pricesData.length; i++) {
+      //Compares previous day price to current and multiplies the multiplier by it | Example of algorithm 1*0.9*0.79*1.23*1.34 
+      holdMultiplier = holdMultiplier * (pricesData[i][1] / pricesData[i - 1][1])
+      //Set highestProfitMultiplier to holdMultiplier if holdMultiplier is bigger in that day && save date of the day
+      if (holdMultiplier > highestProfitMultiplier) {
+        highestProfitMultiplier = holdMultiplier
+        highestProfitSellDate = pricesData[i][0]
+      }
+    }
+    return [startingDate, highestProfitSellDate, highestProfitMultiplier, holdMultiplier];
   }
 
 };

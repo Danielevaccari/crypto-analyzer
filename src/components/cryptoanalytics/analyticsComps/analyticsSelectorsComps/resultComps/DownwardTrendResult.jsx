@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import analyticsUtility from '../../../analyticsUtility';
+
 const DownwardTrendResult = props => {
 
   const handle = () => {
