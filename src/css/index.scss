@@ -56,8 +56,11 @@ body {
     align-items    : center;
 
     .modeSelectorSelect {
-      height       : 24px;
-      border-radius: 5px;
+      color           : $mainfontcolor;
+      height          : 24px;
+      border-radius   : 3px;
+      background-color: $glass;
+      border          : 0px;
     }
   }
 
@@ -72,6 +75,7 @@ body {
 
     .dateInputsForCryptoanalytics {
       font-size: .6rem;
+      border   : 0px;
     }
   }
 

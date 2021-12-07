@@ -131,15 +131,12 @@ const analyticsUtility = {
    */
   getHighestvolumeAndDate: volumeData => {
 
-    let highestVolumeAndDate = {
-      volume: 0,
-      date: undefined
-    }
+    let highestVolumeAndDate = [undefined, 0]
 
     if (volumeData) volumeData.forEach(item => {
-      if (highestVolumeAndDate.volume < item[1]) {
-        highestVolumeAndDate.volume = item[1];
-        highestVolumeAndDate.date = item[0];
+      if (highestVolumeAndDate[1] < item[1]) {
+        highestVolumeAndDate[1] = item[1];
+        highestVolumeAndDate[0] = item[0];
       };
     })
     return highestVolumeAndDate;
@@ -155,7 +152,7 @@ const analyticsUtility = {
     let bestDayToBuyandSell = [undefined, undefined, 1, 1];
 
     for (let i = 0; i < pricesData.length; i++) {
-      analyticsUtility.bestDayToSell(pricesData.slice(i))[2] > bestDayToBuyandSell[2] ? bestDayToBuyandSell = analyticsUtility.bestDayToSell(pricesData.slice(i)) : console.log("heehee")
+      if (analyticsUtility.bestDayToSell(pricesData.slice(i))[2] > bestDayToBuyandSell[2]) bestDayToBuyandSell = analyticsUtility.bestDayToSell(pricesData.slice(i))
     }
     return bestDayToBuyandSell;
   },

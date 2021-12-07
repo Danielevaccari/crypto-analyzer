@@ -7,7 +7,7 @@ import analyticsUtility from '../analyticsUtility';
 
 const AnalyticsSelectors = props => {
   const [marketData, setmarketData] = useState({})
-  const [dataGranularity, setdataGranularity] = useState()
+  const [dataGranularity, setdataGranularity] = useState("1hourgranularity")
 
   const handleCryptoAnalyzing = async () => {
     const data = await coinMarketDataService.getCoinMarketDataByDaterange(analyticsUtility.getUnixtime(props.startdate), analyticsUtility.getUnixtime(props.enddate))
@@ -44,6 +44,7 @@ const AnalyticsSelectors = props => {
             pricesData={marketData.prices}
             volumeData={marketData.total_volumes}
             dataGranularity={dataGranularity}
+            marketData={marketData}
           />
         </div>
       </div>
