@@ -4,46 +4,29 @@ import DownwardTrendResult from './resultComps/DownwardTrendResult.component';
 import HighestVolumeResult from './resultComps/HighestVolumeResult.component';
 import BestDayToBuyandBestDayToSellResult from './resultComps/BestDayToBuyandBestDayToSellResult.component';
 import AnalyticsUtility from '../../../utils/AnalyticsUtility';
+import ButtonForResult from './resultComps/ButtonForResult.component';
 
 const ResultSelector = function SelectWantedResulToDisplay({
-  analyticFeature, dataGranularity, volumeData, pricesData, handleMarketDataFetching,
+  analyticFeature, volumeData, pricesData, handleMarketDataFetching, marketData,
 }) {
-  const [resultDownward, setResultDownward] = useState({ longestStreak: '0' });
+  const [resultDownward, setResultDownward] = useState(0);
   const [resultVolume, setResultVolume] = useState({ highestVolumeDay: 'dd-mm-yyyy', highestVolume: 'xxxxxxxxx' });
   const [resultTimeMachine, setResultTimeMachine] = useState({ buyDate: 'dd-mm-yyyy', sellDate: 'dd-mm-yyyy' });
 
   // When the analytic feature (volume, downward streak .etc) changes results are reset
   useEffect(() => {
-    setResultDownward({ longestStreak: '0' });
-    setResultVolume({ highestVolumeDay: 'dd-mm-yyyy', volume: 'xxxxxxxxx' });
+    setResultDownward(0);
+    setResultVolume({ highestVolumeDay: 'dd-mm-yyyy', highestVolume: 'xxxxxxxxx' });
     setResultTimeMachine({ buyDate: 'dd-mm-yyyy', sellDate: 'dd-mm-yyyy' });
   }, [analyticFeature]);
 
   useEffect(() => {
-    switch (dataGranularity) {
-      case '1hourgranularity':
-        if (analyticFeature === 'downward') setResultDownward(AnalyticsUtility.calculateLongestDownwardTrendInDays(AnalyticsUtility.trimHourlyGranularityToDailyGranularity(pricesData)));
+    if (analyticFeature === 'downward') setResultDownward(AnalyticsUtility.calculateLongestDownwardTrendInDays(AnalyticsUtility.filterMidnightDatapointsBetter(pricesData)));
 
-        if (analyticFeature === 'volume') setResultVolume(AnalyticsUtility.getHighestvolumeAndDate(AnalyticsUtility.getDailyAverageVolumeFromHourlyVolumeData(volumeData)));
+    if (analyticFeature === 'volume') setResultVolume(AnalyticsUtility.getHighestvolumeAndDate(AnalyticsUtility.getDailyAverageVolumeFromHourlyVolumeData(volumeData)));
 
-        if (analyticFeature === 'timemachine') setResultTimeMachine(AnalyticsUtility.bestDayToBuyandBestDayToSell(AnalyticsUtility.trimHourlyGranularityToDailyGranularity(pricesData)));
-        break;
-      case '1daygranularity':
-        if (analyticFeature === 'downward') setResultDownward(AnalyticsUtility.calculateLongestDownwardTrendInDays(pricesData));
-
-        if (analyticFeature === 'volume') setResultVolume(AnalyticsUtility.getHighestvolumeAndDate(volumeData));
-
-        if (analyticFeature === 'timemachine') setResultTimeMachine(AnalyticsUtility.bestDayToBuyandBestDayToSell(pricesData));
-        break;
-      default:
-        if (analyticFeature === 'downward') setResultDownward({ longestStreak: '0' });
-
-        if (analyticFeature === 'volume') setResultVolume({ highestVolumeDay: 'dd-mm-yyyy', volume: 'xxxxxxxxx' });
-
-        if (analyticFeature === 'timemachine') setResultTimeMachine({ buyDate: 'dd-mm-yyyy', sellDate: 'dd-mm-yyyy' });
-        break;
-    }
-  }, []);
+    if (analyticFeature === 'timemachine') setResultTimeMachine(AnalyticsUtility.bestDayToBuyandBestDayToSell(AnalyticsUtility.filterMidnightDatapointsBetter(pricesData)));
+  }, [marketData]);
 
   return (
     <>
@@ -51,52 +34,40 @@ const ResultSelector = function SelectWantedResulToDisplay({
         {analyticFeature === 'downward' ? (
           <DownwardTrendResult
             resultDownward={resultDownward}
-            dataGranularity={dataGranularity}
-            pricesData={pricesData}
           />
         ) : ''}
         {analyticFeature === 'volume' ? (
           <HighestVolumeResult
             resultVolume={resultVolume}
-            dataGranularity={dataGranularity}
             volumeData={volumeData}
           />
         ) : ''}
         {analyticFeature === 'timemachine' ? (
           <BestDayToBuyandBestDayToSellResult
             resultTimeMachine={resultTimeMachine}
-            dataGranularity={dataGranularity}
             pricesData={pricesData}
           />
         ) : ''}
       </div>
-      <button type="button" onClick={() => handleMarketDataFetching()}>
-        Analyze
-      </button>
+      <ButtonForResult handleMarketDataFetching={handleMarketDataFetching} />
     </>
   );
 };
 
 ResultSelector.defaultProps = {
   analyticFeature: 'downward',
-  dataGranularity: '1hourgranularity',
   volumeData: [],
   pricesData: [],
   handleMarketDataFetching: () => { },
+  marketData: {},
 };
 
 ResultSelector.propTypes = {
   analyticFeature: PropTypes.oneOf(['downward', 'volume', 'timemachine']),
-  dataGranularity: PropTypes.oneOf(['1hourgranularity', '1daygranularity', 'Invalid daterange']),
-  volumeData: PropTypes.arrayOf(PropTypes.shape({
-    unixTimeInMs: PropTypes.number,
-    price: PropTypes.number,
-  })),
-  pricesData: PropTypes.arrayOf(PropTypes.shape({
-    unixTimeInMs: PropTypes.number,
-    price: PropTypes.number,
-  })),
+  volumeData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
+  pricesData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
   handleMarketDataFetching: PropTypes.func,
+  marketData: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number))),
 };
 
 export default ResultSelector;

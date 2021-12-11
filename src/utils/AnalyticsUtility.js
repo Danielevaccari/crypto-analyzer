@@ -5,7 +5,7 @@ const AnalyticsUtility = {
   /**
     *
     * @param {Array} pricesData 2D array with unix time and daily price [unixtime ms, price]
-    * @returns {Array} Number of decreasing days, “Price of day N is lower than price of day N-1”
+    * @returns {Integer} Number of decreasing days, “Price of day N is lower than price of day N-1”
     * complexity = Linear in length of array
     */
   calculateLongestDownwardTrendInDays: (pricesData) => {
@@ -35,6 +35,12 @@ const AnalyticsUtility = {
     return longestDownwardTrendDayStreak;
   },
 
+  // DELETE THIS
+  consoleLog: (data) => {
+    data.forEach((item) => {
+      console.log(item[1]);
+    });
+  },
   /**
    *
    * @param {date} startdate yyyy-mm-dd
@@ -68,15 +74,40 @@ const AnalyticsUtility = {
    * @param {Array} data  2D array with unix time and hourly data [unixtime ms, data]
    * @returns {Array}  2D array with unix time and daily (00.00) data [unixtime ms, data]
    */
-  trimHourlyGranularityToDailyGranularity: (data) => {
+  filterMidnightDatapoints: (data) => {
     if (!data) return [];
-    const array = [];
+    const dailydata = [];
 
     // 24 datapoints in a day
-    for (let i = 0; i < data.length; i += 24) {
-      array.push(data[i]);
-    }
-    return array;
+    data.forEach((item) => {
+      const date = new Date(item[0]);
+      const midnightBool = date.getUTCHours() === 0;
+      const minuteBool = date.getMinutes() <= 15;
+
+      if (midnightBool && minuteBool) {
+        dailydata.push(item);
+      }
+    });
+    return dailydata;
+  },
+  filterMidnightDatapointsBetter: (data) => {
+    if (!data) return [];
+    const dailydata = [];
+
+    let previousDayValue;
+
+    // 24 datapoints in a day
+    data.forEach((item) => {
+      const date = new Date(item[0]);
+      const day = date.getUTCDay();
+
+      if (day !== previousDayValue) {
+        dailydata.push(item);
+      }
+      previousDayValue = day;
+    });
+    console.log(dailydata);
+    return dailydata;
   },
 
   /**
@@ -161,6 +192,8 @@ const AnalyticsUtility = {
         maxProfitMultiplier = tempMaxProfitMultiplier;
       }
     }
+    buyDate = TimeAndDateTransformations.getDateFromUnixTime(buyDate);
+    sellDate = TimeAndDateTransformations.getDateFromUnixTime(sellDate);
     return { buyDate, sellDate };
   },
 

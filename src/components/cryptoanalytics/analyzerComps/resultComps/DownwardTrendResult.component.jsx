@@ -6,7 +6,7 @@ const DownwardTrendResult = function DisplayDownwardTrendresult({ resultDownward
     <div className="cryptoAnalyticResult">
       Longest downward trend:
       <u style={{ fontSize: '.9rem' }}>
-        {resultDownward.longestStreak}
+        {resultDownward}
       </u>
       {resultDownward ? ' days' : ''}
     </div>
@@ -14,11 +14,11 @@ const DownwardTrendResult = function DisplayDownwardTrendresult({ resultDownward
 };
 
 DownwardTrendResult.defaultProps = {
-  resultDownward: { longestStreak: '0' },
+  resultDownward: 0,
 };
 
 DownwardTrendResult.propTypes = {
-  resultDownward: PropTypes.objectOf(PropTypes.string),
+  resultDownward: PropTypes.number,
 };
 
 export default DownwardTrendResult;

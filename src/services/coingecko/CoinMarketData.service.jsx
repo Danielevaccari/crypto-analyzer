@@ -1,5 +1,6 @@
 import axios from 'axios';
 import TimeAndDateTransformations from '../../utils/TimeAndDateTransformations';
+import AnalyticsUtility from '../../utils/AnalyticsUtility';
 
 const CoinMarketData = {
   /**
@@ -15,7 +16,8 @@ const CoinMarketData = {
     const coinMarketDataUrl = `${process.env.REACT_APP_COINBASE_API}/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from=${unixStartDate}&to=${unixEndDate + 3600}`;
 
     const response = await axios.get(coinMarketDataUrl);
-    console.log(response);
+    AnalyticsUtility.consoleLog(response.data.prices);
+    console.log('nyt');
     return response.data;
   },
 };

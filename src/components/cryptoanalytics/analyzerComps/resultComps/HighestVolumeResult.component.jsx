@@ -2,20 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const HighestVolumeResult = function DisplayHighestVolumeResult({ resultVolume }) {
-  const [highestVolumeDay, highestVolume] = resultVolume;
+  const { highestVolumeDay, highestVolume } = resultVolume;
 
   return (
     <div className="cryptoAnalyticResult">
       Highest Volume and date:
       <div style={{ fontSize: '.8rem' }}>
-        {resultVolume ? (
-          <span>
-            {Math.floor(highestVolume)}
-            e|
-            {highestVolumeDay ? new Date(highestVolumeDay).toLocaleDateString().substring(0, 10) : ''}
-          </span>
-        )
-          : ''}
+        <span>
+          {highestVolume}
+          €|
+          {highestVolumeDay}
+        </span>
       </div>
     </div>
   );

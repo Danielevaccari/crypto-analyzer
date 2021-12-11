@@ -1,18 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import TimeAndDateTransformations from '../../../../utils/TimeAndDateTransformations';
 
 const BestDayToBuyandBestDayToSellResult = function Result({ resultTimeMachine }) {
+  const { buyDate, sellDate } = resultTimeMachine;
+
   return (
-    <div>
+    <div className="cryptoAnalyticResult">
       Buy:
       <u>
-        {resultTimeMachine ? TimeAndDateTransformations.getDateFromUnixTime(resultTimeMachine[0]) : ''}
+        {buyDate}
       </u>
       {' '}
       Sell:
       <u>
-        {resultTimeMachine ? TimeAndDateTransformations.getDateFromUnixTime(resultTimeMachine[1]) : ''}
+        {sellDate}
       </u>
     </div>
   );
