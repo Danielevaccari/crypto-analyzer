@@ -1,4 +1,4 @@
-import TimeAndDateTransformations from './TimeAndDateTransformations';
+import TimeAndDateTransformations from './TimeAndDateTransformations.util';
 
 const AnalyticsUtility = {
 

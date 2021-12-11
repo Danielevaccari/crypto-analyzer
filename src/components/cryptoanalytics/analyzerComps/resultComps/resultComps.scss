@@ -1,0 +1,21 @@
+.cryptoAnalyticsResult {
+  background-color: rgb(60, 60, 60);
+  color           : white;
+  height          : 50%;
+  flex            : 80%;
+  max-width       : 300px;
+  display         : flex;
+  justify-content : center;
+  align-items     : center;
+  margin          : 10px 5px 10px 5px;
+  font-size       : .7rem;
+}
+
+.buttonForResult {
+  background-color: floralwhite;
+  height          : 50px;
+  max-width       : 70px;
+  border-radius   : 100%;
+  flex            : 20%;
+  border          : black solid 1px;
+}

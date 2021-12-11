@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import DownwardTrendResult from './resultComps/DownwardTrendResult.component';
 import HighestVolumeResult from './resultComps/HighestVolumeResult.component';
 import BestDayToBuyandBestDayToSellResult from './resultComps/BestDayToBuyandBestDayToSellResult.component';
-import AnalyticsUtility from '../../../utils/AnalyticsUtility';
+import AnalyticsUtility from '../../../utils/AnalyticsUtility.util';
 import ButtonForResult from './resultComps/ButtonForResult.component';
 
 const ResultSelector = function SelectWantedResulToDisplay({
@@ -23,7 +23,7 @@ const ResultSelector = function SelectWantedResulToDisplay({
   useEffect(() => {
     if (analyticFeature === 'downward') setResultDownward(AnalyticsUtility.calculateLongestDownwardTrendInDays(AnalyticsUtility.filterMidnightDatapointsBetter(pricesData)));
 
-    if (analyticFeature === 'volume') setResultVolume(AnalyticsUtility.getHighestvolumeAndDate(AnalyticsUtility.getDailyAverageVolumeFromHourlyVolumeData(volumeData)));
+    if (analyticFeature === 'volume') setResultVolume(AnalyticsUtility.getHighestvolumeAndDate(AnalyticsUtility.filterMidnightDatapointsBetter(volumeData)));
 
     if (analyticFeature === 'timemachine') setResultTimeMachine(AnalyticsUtility.bestDayToBuyandBestDayToSell(AnalyticsUtility.filterMidnightDatapointsBetter(pricesData)));
   }, [marketData]);
