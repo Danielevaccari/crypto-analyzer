@@ -89,8 +89,14 @@ const analyticsUtility = {
         maxProfitMultiplier = tempMaxProfitMultiplier;
       }
     }
-    buyDate = timeAndDateTransformations.getDateFromUnixTime(buyDate);
-    sellDate = timeAndDateTransformations.getDateFromUnixTime(sellDate);
+    // If no profit date found return hold message
+    if (buyDate === undefined) {
+      buyDate = 'hold';
+      sellDate = 'hold';
+    } else {
+      buyDate = timeAndDateTransformations.getDateFromUnixTime(buyDate);
+      sellDate = timeAndDateTransformations.getDateFromUnixTime(sellDate);
+    }
     return { buyDate, sellDate };
   },
 

@@ -17,7 +17,6 @@ const CoinMarketData = {
     const response = await axios.get(coinMarketDataUrl);
     console.log(response.data.total_volumes);
     console.log('nyt');
-    console.log(new Date(1638316800000).toLocaleDateString());
     return response.data;
   },
 };
