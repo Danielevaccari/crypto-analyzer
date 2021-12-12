@@ -1,5 +1,5 @@
 import axios from 'axios';
-import TimeAndDateTransformations from '../../utils/TimeAndDateTransformations.util';
+import timeAndDateTransformations from '../../utils/timeAndDateTransformations.util';
 
 const CoinMarketData = {
   /**
@@ -9,14 +9,15 @@ const CoinMarketData = {
    */
   getCoinMarketDataByDaterange: async (startDate, endDate) => {
     // Coingecko api url for coin market data | + 3600 seconds to get data for enddate
-    const unixStartDate = TimeAndDateTransformations.getUnixtime(startDate);
-    const unixEndDate = TimeAndDateTransformations.getUnixtime(endDate);
+    const unixStartDate = timeAndDateTransformations.getUnixtime(startDate);
+    const unixEndDate = timeAndDateTransformations.getUnixtime(endDate);
 
     const coinMarketDataUrl = `${process.env.REACT_APP_COINBASE_API}/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from=${unixStartDate}&to=${unixEndDate + 3600}`;
 
     const response = await axios.get(coinMarketDataUrl);
     console.log(response.data.total_volumes);
     console.log('nyt');
+    console.log(new Date(1638316800000).toLocaleDateString());
     return response.data;
   },
 };

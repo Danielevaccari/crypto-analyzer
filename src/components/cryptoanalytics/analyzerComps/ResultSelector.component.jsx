@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import DownwardTrendResult from './resultComps/DownwardTrendResult.component';
 import HighestVolumeResult from './resultComps/HighestVolumeResult.component';
 import BestDayToBuyandBestDayToSellResult from './resultComps/BestDayToBuyandBestDayToSellResult.component';
-import AnalyticsUtility from '../../../utils/AnalyticsUtility.util';
+import analyticsUtility from '../../../utils/analytics.util';
 import ButtonForResult from './resultComps/ButtonForResult.component';
 
 const ResultSelector = function SelectWantedResulToDisplay({
@@ -21,11 +21,11 @@ const ResultSelector = function SelectWantedResulToDisplay({
   }, [analyticFeature]);
 
   useEffect(() => {
-    if (analyticFeature === 'downward') setResultDownward(AnalyticsUtility.calculateLongestDownwardTrendInDays(AnalyticsUtility.filterMidnightDatapointsBetter(pricesData)));
+    if (analyticFeature === 'downward') setResultDownward(analyticsUtility.calculateLongestDownwardTrendInDays(pricesData));
 
-    if (analyticFeature === 'volume') setResultVolume(AnalyticsUtility.getHighestvolumeAndDate(AnalyticsUtility.filterMidnightDatapointsBetter(volumeData)));
+    if (analyticFeature === 'volume') setResultVolume(analyticsUtility.getHighestvolumeAndDate(volumeData));
 
-    if (analyticFeature === 'timemachine') setResultTimeMachine(AnalyticsUtility.bestDayToBuyandBestDayToSell(AnalyticsUtility.filterMidnightDatapointsBetter(pricesData)));
+    if (analyticFeature === 'timemachine') setResultTimeMachine(analyticsUtility.bestDayToBuyandBestDayToSell(pricesData));
   }, [marketData]);
 
   return (
