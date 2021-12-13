@@ -21,7 +21,7 @@ const ResultSelector = function SelectWantedResulToDisplay({
   }, [analyticFeature]);
 
   useEffect(() => {
-    if (marketData.prices.length === 0) return;
+    if (volumeData.length === 0 || pricesData.length === 0) return;
 
     if (analyticFeature === 'downward') setResultDownward(analyticsUtility.calculateLongestDownwardTrendInDays(pricesData));
 
