@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 const Feature = function WhatToMeasure({ analyticFeature, setanalyticFeature }) {
   return (
     <div className="modeSelectorContainer">
-      <div>Feature</div>
+      <div style={{ marginLeft: '5px' }}>Feature</div>
       <select value={analyticFeature} onChange={(e) => setanalyticFeature(e.target.value)} className="modeSelectorSelect">
         <option value="downward">Downward trend</option>
         <option value="volume">Highest tradind volume</option>

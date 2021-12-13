@@ -4,17 +4,22 @@ import PropTypes from 'prop-types';
 const DownwardTrendResult = function DisplayDownwardTrendresult({ resultDownward }) {
   return (
     <div className="cryptoAnalyticResult">
-      Longest downward trend:
-      <u style={{ fontSize: '.9rem' }}>
-        {resultDownward}
-      </u>
-      {resultDownward ? ' days' : ''}
+      {resultDownward !== -1 ? (
+        <span>
+          {' '}
+          Longest downward trend:
+          <u style={{ fontSize: '.9rem' }}>
+            {resultDownward}
+          </u>
+          days
+        </span>
+      ) : ''}
     </div>
   );
 };
 
 DownwardTrendResult.defaultProps = {
-  resultDownward: 0,
+  resultDownward: -1,
 };
 
 DownwardTrendResult.propTypes = {

@@ -10,17 +10,11 @@ const Analyzer = function CryptoAnalyzer() {
   const [marketData, setmarketData] = useState({ prices: [], total_volumes: [] });
   const [startdate, setstartdate] = useState();
   const [enddate, setenddate] = useState();
-  // const [dataGranularity, setdataGranularity] = useState('1hourgranularity');
   const [analyticFeature, setanalyticFeature] = useState('downward');
 
   const handleMarketDataFetching = async () => {
     setmarketData(await CoinMarketDataService.getCoinMarketDataByDaterange(startdate, enddate));
   };
-
-  // useEffect(() => {
-  //   console.log(AnalyticsUtility.determineDataGranularity(startdate, enddate));
-  //   setdataGranularity(AnalyticsUtility.determineDataGranularity(startdate, enddate));
-  // }, [startdate, enddate]);
 
   return (
     <div className="cryptoAnalyticsWrapper">
@@ -46,7 +40,6 @@ const Analyzer = function CryptoAnalyzer() {
             handleMarketDataFetching={handleMarketDataFetching}
             pricesData={marketData.prices}
             volumeData={marketData.total_volumes}
-            // dataGranularity={dataGranularity}
             marketData={marketData}
           />
         </div>

@@ -6,14 +6,19 @@ const HighestVolumeResult = function DisplayHighestVolumeResult({ resultVolume }
 
   return (
     <div className="cryptoAnalyticResult">
-      Highest Volume and date:
-      <div style={{ fontSize: '.8rem' }}>
+      {highestVolumeDay !== 'dd-mm-yyyy' ? (
         <span>
-          {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(highestVolume)}
-          <span>  </span>
-          {highestVolumeDay}
+          Highest Volume and date:
+          <div style={{ fontSize: '.8rem' }}>
+            <span>
+              {highestVolume > 0 ? new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(highestVolume) : ''}
+              <span>  </span>
+              {highestVolumeDay !== 'dd-mm-yyyy' ? highestVolumeDay : ''}
+            </span>
+          </div>
         </span>
-      </div>
+      )
+        : ''}
     </div>
   );
 };

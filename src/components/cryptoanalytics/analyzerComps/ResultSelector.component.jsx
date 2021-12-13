@@ -9,18 +9,20 @@ import ButtonForResult from './resultComps/ButtonForResult.component';
 const ResultSelector = function SelectWantedResulToDisplay({
   analyticFeature, volumeData, pricesData, handleMarketDataFetching, marketData,
 }) {
-  const [resultDownward, setResultDownward] = useState(0);
+  const [resultDownward, setResultDownward] = useState(-1);
   const [resultVolume, setResultVolume] = useState({ highestVolumeDay: 'dd-mm-yyyy', highestVolume: 'xxxxxxxxx' });
   const [resultTimeMachine, setResultTimeMachine] = useState({ buyDate: 'dd-mm-yyyy', sellDate: 'dd-mm-yyyy' });
 
   // When the analytic feature (volume, downward streak .etc) changes results are reset
   useEffect(() => {
-    setResultDownward(0);
+    setResultDownward(-1);
     setResultVolume({ highestVolumeDay: 'dd-mm-yyyy', highestVolume: 'xxxxxxxxx' });
     setResultTimeMachine({ buyDate: 'dd-mm-yyyy', sellDate: 'dd-mm-yyyy' });
   }, [analyticFeature]);
 
   useEffect(() => {
+    if (marketData.prices.length === 0) return;
+
     if (analyticFeature === 'downward') setResultDownward(analyticsUtility.calculateLongestDownwardTrendInDays(pricesData));
 
     if (analyticFeature === 'volume') setResultVolume(analyticsUtility.getHighestvolumeAndDate(volumeData));

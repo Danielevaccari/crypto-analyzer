@@ -2,7 +2,6 @@ import timeAndDateTransformations from './timeAndDateTransformations.util';
 import dataFilter from './dataFilter.util';
 
 const analyticsUtility = {
-
   /**
     *
     * @param {Array} pricesData 2D array with unix time and daily price [unixtime ms, price]

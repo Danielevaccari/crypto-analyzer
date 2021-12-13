@@ -6,15 +6,21 @@ const BestDayToBuyandBestDayToSellResult = function Result({ resultTimeMachine }
 
   return (
     <div className="cryptoAnalyticResult">
-      Buy:
-      <u>
-        {buyDate}
-      </u>
-      {' '}
-      Sell:
-      <u>
-        {sellDate}
-      </u>
+      {buyDate !== 'dd-mm-yyyy' ? (
+        <span>
+          {' '}
+          Buy:
+          <u>
+            {buyDate}
+          </u>
+          {' '}
+          Sell:
+          <u>
+            {sellDate}
+          </u>
+        </span>
+      )
+        : ''}
     </div>
   );
 };
