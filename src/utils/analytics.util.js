@@ -42,7 +42,7 @@ const analyticsUtility = {
    * @param {Array} volumeData 2D array with unix time and daily volume [unixtime ms, volume]
    * @returns {Object}{ highestVolumeDay, highestVolume } highestVolumeDay = dd-mm-yyyy
    */
-  getHighestvolumeAndDate: (volumeDataUnfiltered) => {
+  getHighestVolumeAndDate: (volumeDataUnfiltered) => {
     const volumeData = dataFilter.filterMidnightDatapointsFromData(volumeDataUnfiltered);
     // eslint-disable-next-line no-unused-vars
     let [highestVolumeDay, highestVolume] = [undefined, 0];
@@ -68,7 +68,7 @@ const analyticsUtility = {
    * @returns {Object} { buyDate, sellDate }
    * Returns the best day to buy and to sell to maximize profits given a certain date range
    */
-  bestDayToBuyandBestDayToSell: (pricesDataUnfiltered) => {
+  bestDayToBuyAndBestDayToSell: (pricesDataUnfiltered) => {
     const pricesData = dataFilter.filterMidnightDatapointsFromData(pricesDataUnfiltered);
     let [buyDate, sellDate, maxProfitMultiplier] = [undefined, undefined, 1];
 

@@ -15,25 +15,25 @@ describe('test analytics.util.js', () => {
   });
 
   test('best day to buy and sell 2020-01-01 / 2020-12-31', () => {
-    expect(analyticsUtility.bestDayToBuyandBestDayToSell(
+    expect(analyticsUtility.bestDayToBuyAndBestDayToSell(
       mockupData.year2020.prices,
     )).toStrictEqual({ buyDate: '17.3.2020', sellDate: '31.12.2020' });
   });
 
   test('best day to buy and sell 2020-03-01 / 2021-08-01', () => {
-    expect(analyticsUtility.bestDayToBuyandBestDayToSell(
+    expect(analyticsUtility.bestDayToBuyAndBestDayToSell(
       mockupData.from010320to010821.prices,
     )).toStrictEqual({ buyDate: '17.3.2020', sellDate: '14.4.2021' });
   });
 
   test('highest volume and date 2020-01-01 / 2020-12-31', async () => {
-    expect(analyticsUtility.getHighestvolumeAndDate(
+    expect(analyticsUtility.getHighestVolumeAndDate(
       mockupData.year2020.total_volumes,
     )).toStrictEqual({ highestVolumeDay: '11.2.2020', highestVolume: '74607356578' });
   });
 
   test('highest volume and date 2020-03-01 / 2021-08-01', async () => {
-    expect(analyticsUtility.getHighestvolumeAndDate(
+    expect(analyticsUtility.getHighestVolumeAndDate(
       mockupData.from010320to010821.total_volumes,
     )).toStrictEqual({ highestVolumeDay: '4.1.2021', highestVolume: '146032480261' });
   });

@@ -18,7 +18,7 @@ const Analyzer = function CryptoAnalyzer() {
   return (
     <div className="cryptoAnalyticsWrapper">
       {/* Header */}
-      <h1 className="cryptoAnalyzerHeader">Crypto Analyzer</h1>
+      <h1 className="cryptoAnalyzerHeader">Bitcoin Analyzer</h1>
       <div className="cryptoAnalyticsContainer">
         <div className="cryptoAnalyticsContainerTop">
           <FeatureSelector

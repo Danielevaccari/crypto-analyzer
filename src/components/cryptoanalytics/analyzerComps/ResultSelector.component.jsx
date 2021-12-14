@@ -21,13 +21,11 @@ const ResultSelector = function SelectWantedResulToDisplay({
   }, [analyticFeature]);
 
   useEffect(() => {
-    if (volumeData.length === 0 || pricesData.length === 0) return;
-
     if (analyticFeature === 'downward') setResultDownward(analyticsUtility.calculateLongestDownwardTrendInDays(pricesData));
 
-    if (analyticFeature === 'volume') setResultVolume(analyticsUtility.getHighestvolumeAndDate(volumeData));
+    if (analyticFeature === 'volume') setResultVolume(analyticsUtility.getHighestVolumeAndDate(volumeData));
 
-    if (analyticFeature === 'timemachine') setResultTimeMachine(analyticsUtility.bestDayToBuyandBestDayToSell(pricesData));
+    if (analyticFeature === 'timemachine') setResultTimeMachine(analyticsUtility.bestDayToBuyAndBestDayToSell(pricesData));
   }, [volumeData, pricesData]);
 
   return (
