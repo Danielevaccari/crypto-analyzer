@@ -1,5 +1,5 @@
 .cryptoAnalyticsResult {
-  background-color: rgb(60, 60, 60);
+  background-color: rgb(77, 77, 77);
   color           : rgb(251, 255, 0);
   height          : 50%;
   flex            : 80%;
@@ -12,10 +12,11 @@
 }
 
 .buttonForResult {
-  background-color: floralwhite;
+  background-color: rgb(235, 228, 228);
   height          : 50px;
   max-width       : 70px;
   border-radius   : 100%;
   flex            : 20%;
   border          : black solid 1px;
+  box-shadow      : -3px -2px 5px #272727;
 }

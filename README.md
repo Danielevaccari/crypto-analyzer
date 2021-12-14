@@ -7,16 +7,14 @@ Description
 
 This project is a cryptocoin data analyzer. At the moment you can analyze Bitcoin's highest volumes, longest downward trends and play post-wise with the timemachine function (best day to buy and sell).
 
-Getting Started
-Dependencies
-
-Installing
+--------------------------------------------------------
+Open project on your local instructions
 
 Prerequisities: node, git
 
-1. Clone project to your local
-2. yarn / npm install
-3. Add .env and copy this REACT_APP_COINBASE_API=https://api.coingecko.com/api
-4. yarn start
-5. To run tests => yarn test / npm run test
+1. git clone https://github.com/Danielevaccari/crypto-analyzer.git
+2. touch .env; echo "REACT_APP_COINBASE_API=https://api.coingecko.com/api" >> .env
+3. yarn / npm install
+4. yarn test --coverage / npm test --coverage
+5. yarn start / npm start
 

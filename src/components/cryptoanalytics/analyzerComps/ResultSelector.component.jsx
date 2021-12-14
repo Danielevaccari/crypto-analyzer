@@ -7,7 +7,7 @@ import analyticsUtility from '../../../utils/analytics.util';
 import ButtonForResult from './resultComps/ButtonForResult.component';
 
 const ResultSelector = function SelectWantedResulToDisplay({
-  analyticFeature, volumeData, pricesData, handleMarketDataFetching, marketData,
+  analyticFeature, volumeData, pricesData, handleMarketDataFetching,
 }) {
   const [resultDownward, setResultDownward] = useState(-1);
   const [resultVolume, setResultVolume] = useState({ highestVolumeDay: 'dd-mm-yyyy', highestVolume: 'xxxxxxxxx' });
@@ -28,7 +28,7 @@ const ResultSelector = function SelectWantedResulToDisplay({
     if (analyticFeature === 'volume') setResultVolume(analyticsUtility.getHighestvolumeAndDate(volumeData));
 
     if (analyticFeature === 'timemachine') setResultTimeMachine(analyticsUtility.bestDayToBuyandBestDayToSell(pricesData));
-  }, [marketData]);
+  }, [volumeData, pricesData]);
 
   return (
     <>
@@ -61,7 +61,6 @@ ResultSelector.defaultProps = {
   volumeData: [],
   pricesData: [],
   handleMarketDataFetching: () => { },
-  marketData: {},
 };
 
 ResultSelector.propTypes = {
@@ -69,7 +68,6 @@ ResultSelector.propTypes = {
   volumeData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
   pricesData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
   handleMarketDataFetching: PropTypes.func,
-  marketData: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number))),
 };
 
 export default ResultSelector;

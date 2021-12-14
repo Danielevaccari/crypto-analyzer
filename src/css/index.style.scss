@@ -1,0 +1,27 @@
+@import "./colors/maincolors.style.scss";
+@import "./mainfonts/mainfonts.style.scss";
+@import "../components/cryptoanalytics/cryptoAnalyzer.style.scss";
+@import "../components/cryptoanalytics/analyzerComps/analyzerComps.style.scss";
+@import "../components/cryptoanalytics/analyzerComps/resultComps/resultComps.style.scss";
+
+// global
+
+*,
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing   : border-box;
+  box-sizing        : border-box;
+}
+
+*:focus {
+  outline: 0;
+}
+
+body {
+  margin: 0;
+  color : $mainfontcolor;
+
+  font-family: $mainfontfamily;
+  font-size  : .8rem;
+}

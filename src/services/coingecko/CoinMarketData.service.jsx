@@ -15,8 +15,6 @@ const CoinMarketData = {
     const coinMarketDataUrl = `${process.env.REACT_APP_COINBASE_API}/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from=${unixStartDate}&to=${unixEndDate + 3600}`;
 
     const response = await axios.get(coinMarketDataUrl);
-    console.log(response.data.total_volumes);
-    console.log('nyt');
     return response.data;
   },
 };

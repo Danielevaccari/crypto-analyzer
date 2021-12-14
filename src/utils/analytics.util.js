@@ -37,13 +37,6 @@ const analyticsUtility = {
     return longestDownwardTrendDayStreak;
   },
 
-  // DELETE THIS
-  consoleLog: (data) => {
-    data.forEach((item) => {
-      console.log(item[1]);
-    });
-  },
-
   /**
    *
    * @param {Array} volumeData 2D array with unix time and daily volume [unixtime ms, volume]

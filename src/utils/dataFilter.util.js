@@ -21,7 +21,6 @@ const dataFilter = {
       }
       previousDayValue = day;
     });
-    console.log(dailydata);
     return dailydata;
   },
 };

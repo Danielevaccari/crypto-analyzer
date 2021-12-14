@@ -3,7 +3,6 @@ import FeatureSelector from './analyzerComps/FeatureSelector.component';
 import CoinMarketDataService from '../../services/coingecko/CoinMarketData.service';
 import ResultSelector from './analyzerComps/ResultSelector.component';
 import DaterangeSelector from './analyzerComps/DaterangeSelector.component';
-import CryptoHeader from './analyzerComps/CryptoHeader.component';
 
 const Analyzer = function CryptoAnalyzer() {
   // Application state
@@ -18,7 +17,8 @@ const Analyzer = function CryptoAnalyzer() {
 
   return (
     <div className="cryptoAnalyticsWrapper">
-      <CryptoHeader />
+      {/* Header */}
+      <h1 className="cryptoAnalyzerHeader">Crypto Analyzer</h1>
       <div className="cryptoAnalyticsContainer">
         <div className="cryptoAnalyticsContainerTop">
           <FeatureSelector
@@ -40,7 +40,6 @@ const Analyzer = function CryptoAnalyzer() {
             handleMarketDataFetching={handleMarketDataFetching}
             pricesData={marketData.prices}
             volumeData={marketData.total_volumes}
-            marketData={marketData}
           />
         </div>
       </div>
