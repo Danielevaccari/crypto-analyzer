@@ -1,10 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import analyticsUtility from '../../../../utils/analytics.util';
 
-const DownwardTrendResult = function DisplayDownwardTrendresult({ resultDownward }) {
+const DownwardTrendResult = function DisplayDownwardTrendresult({ pricesData }) {
+  const resultDownward = analyticsUtility.calculateLongestDownwardTrendInDays(pricesData);
+
+  if (pricesData.length < 1) {
+    return <div className="cryptoAnalyticResult">Invalid input</div>;
+  }
+
   return (
     <div className="cryptoAnalyticResult">
-      {resultDownward !== -1 ? (
+      {resultDownward !== 0 ? (
         <span>
           {' '}
           Longest downward trend:
@@ -13,17 +20,17 @@ const DownwardTrendResult = function DisplayDownwardTrendresult({ resultDownward
           </u>
           days
         </span>
-      ) : ''}
+      ) : 'No downward trend'}
     </div>
   );
 };
 
 DownwardTrendResult.defaultProps = {
-  resultDownward: -1,
+  pricesData: [],
 };
 
 DownwardTrendResult.propTypes = {
-  resultDownward: PropTypes.number,
+  pricesData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
 };
 
 export default DownwardTrendResult;

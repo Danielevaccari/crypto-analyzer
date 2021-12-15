@@ -1,12 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import analyticsUtility from '../../../../utils/analytics.util';
 
-const BestDayToBuyandBestDayToSellResult = function Result({ resultTimeMachine }) {
-  const { buyDate, sellDate } = resultTimeMachine;
+const BestDayToBuyandBestDayToSellResult = function Result({ pricesData }) {
+  const { buyDate, sellDate } = analyticsUtility.bestDayToBuyAndBestDayToSell(pricesData);
+
+  if (pricesData.length < 1) {
+    return <div className="cryptoAnalyticResult">Invalid input</div>;
+  }
 
   return (
     <div className="cryptoAnalyticResult">
-      {buyDate !== 'dd-mm-yyyy' ? (
+      {buyDate !== 'hold' ? (
         <span>
           {' '}
           Buy:
@@ -20,20 +25,17 @@ const BestDayToBuyandBestDayToSellResult = function Result({ resultTimeMachine }
           </u>
         </span>
       )
-        : ''}
+        : 'Hold'}
     </div>
   );
 };
 
 BestDayToBuyandBestDayToSellResult.defaultProps = {
-  resultTimeMachine: { buyDate: 'dd-mm-yyyy', sellDate: 'dd-mm-yyyy' },
+  pricesData: [],
 };
 
 BestDayToBuyandBestDayToSellResult.propTypes = {
-  resultTimeMachine: PropTypes.shape({
-    buyDate: PropTypes.string,
-    sellDate: PropTypes.string,
-  }),
+  pricesData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
 };
 
 export default BestDayToBuyandBestDayToSellResult;

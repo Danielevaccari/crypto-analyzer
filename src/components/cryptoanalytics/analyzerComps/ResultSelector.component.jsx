@@ -1,50 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import DownwardTrendResult from './resultComps/DownwardTrendResult.component';
 import HighestVolumeResult from './resultComps/HighestVolumeResult.component';
 import BestDayToBuyandBestDayToSellResult from './resultComps/BestDayToBuyandBestDayToSellResult.component';
-import analyticsUtility from '../../../utils/analytics.util';
 import ButtonForResult from './resultComps/ButtonForResult.component';
 
 const ResultSelector = function SelectWantedResulToDisplay({
   analyticFeature, volumeData, pricesData, handleMarketDataFetching,
 }) {
-  const [resultDownward, setResultDownward] = useState(-1);
-  const [resultVolume, setResultVolume] = useState({ highestVolumeDay: 'dd-mm-yyyy', highestVolume: 'xxxxxxxxx' });
-  const [resultTimeMachine, setResultTimeMachine] = useState({ buyDate: 'dd-mm-yyyy', sellDate: 'dd-mm-yyyy' });
-
-  // When the analytic feature (volume, downward streak .etc) changes results are reset
-  useEffect(() => {
-    setResultDownward(-1);
-    setResultVolume({ highestVolumeDay: 'dd-mm-yyyy', highestVolume: 'xxxxxxxxx' });
-    setResultTimeMachine({ buyDate: 'dd-mm-yyyy', sellDate: 'dd-mm-yyyy' });
-  }, [analyticFeature]);
-
-  useEffect(() => {
-    if (analyticFeature === 'downward') setResultDownward(analyticsUtility.calculateLongestDownwardTrendInDays(pricesData));
-
-    if (analyticFeature === 'volume') setResultVolume(analyticsUtility.getHighestVolumeAndDate(volumeData));
-
-    if (analyticFeature === 'timemachine') setResultTimeMachine(analyticsUtility.bestDayToBuyAndBestDayToSell(pricesData));
-  }, [volumeData, pricesData]);
-
   return (
     <>
       <div className="cryptoAnalyticsResult">
         {analyticFeature === 'downward' ? (
           <DownwardTrendResult
-            resultDownward={resultDownward}
+            pricesData={pricesData}
           />
         ) : ''}
         {analyticFeature === 'volume' ? (
           <HighestVolumeResult
-            resultVolume={resultVolume}
             volumeData={volumeData}
           />
         ) : ''}
         {analyticFeature === 'timemachine' ? (
           <BestDayToBuyandBestDayToSellResult
-            resultTimeMachine={resultTimeMachine}
             pricesData={pricesData}
           />
         ) : ''}

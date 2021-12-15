@@ -1,34 +1,35 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import analyticsUtility from '../../../../utils/analytics.util';
 
-const HighestVolumeResult = function DisplayHighestVolumeResult({ resultVolume }) {
-  const { highestVolumeDay, highestVolume } = resultVolume;
+const HighestVolumeResult = function DisplayHighestVolumeResult({ volumeData }) {
+  const { highestVolumeDay, highestVolume } = analyticsUtility.getHighestVolumeAndDate(volumeData);
 
   return (
     <div className="cryptoAnalyticResult">
-      {highestVolumeDay !== 'dd-mm-yyyy' ? (
+      {highestVolumeDay !== 'Invalid Date' ? (
         <span>
           Highest Volume and date:
           <div style={{ fontSize: '.8rem' }}>
             <span>
               {highestVolume > 0 ? new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(highestVolume) : ''}
               <span>  </span>
-              {highestVolumeDay !== 'dd-mm-yyyy' ? highestVolumeDay : ''}
+              {highestVolumeDay}
             </span>
           </div>
         </span>
       )
-        : ''}
+        : 'Invalid input'}
     </div>
   );
 };
 
 HighestVolumeResult.defaultProps = {
-  resultVolume: { highestVolumeDay: 'dd-mm-yyyy', highestVolume: 'xxxxxxxxx' },
+  volumeData: [],
 };
 
 HighestVolumeResult.propTypes = {
-  resultVolume: PropTypes.objectOf(PropTypes.string),
+  volumeData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
 };
 
 export default HighestVolumeResult;
