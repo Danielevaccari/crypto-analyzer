@@ -14,9 +14,9 @@ const dataFilter = {
     data.forEach((item) => {
       const date = new Date(item[0]);
       const day = date.getUTCDay();
-      const midnightBool = date.getUTCHours() === 0;
+      const isMidnightDatapoint = date.getUTCHours() === 0;
 
-      if (day !== previousDayValue && midnightBool) {
+      if (day !== previousDayValue && isMidnightDatapoint) {
         dailydata.push(item);
       }
       previousDayValue = day;
