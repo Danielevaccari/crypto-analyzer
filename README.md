@@ -29,3 +29,7 @@ Test:
 
 
 1.  yarn test --coverage / npm test --coverage
+
+Fix eslint
+
+1.  eslint 'src/**/*.{jsx,js}/' --fix

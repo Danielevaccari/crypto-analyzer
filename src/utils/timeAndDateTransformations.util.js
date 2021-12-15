@@ -9,7 +9,7 @@ const timeAndDateTransformations = {
   /**
   *
   * @param {Number} milliseconds
-  * @returns {Date} date A date in dd-mm-yyyy
+  * @returns {Date} A date in dd-mm-yyyy
   */
   getDateFromUnixTime: (unixtime) => new Date(unixtime).toLocaleDateString(),
 
