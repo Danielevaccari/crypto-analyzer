@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import analyticsUtility from '../../../../utils/analytics.util';
+import analytics from '../../../../utils/analytics.util';
 
 const HighestVolumeResult = function DisplayHighestVolumeResult({ volumeData }) {
-  const { highestVolumeDay, highestVolume } = analyticsUtility.getHighestVolumeAndDate(volumeData);
+  const { highestVolumeDay, highestVolume } = analytics.getHighestVolumeAndDate(volumeData);
 
   return (
     <div className="cryptoAnalyticResult">

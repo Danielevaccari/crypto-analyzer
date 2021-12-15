@@ -1,4 +1,4 @@
-const TimeAndDateTransformations = {
+const timeAndDateTransformations = {
   /**
  *
  * @param {Date} date A date in yyyy-mm-dd
@@ -15,4 +15,4 @@ const TimeAndDateTransformations = {
 
 };
 
-export default TimeAndDateTransformations;
+export default timeAndDateTransformations;

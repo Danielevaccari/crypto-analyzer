@@ -1,7 +1,7 @@
 import timeAndDateTransformations from './timeAndDateTransformations.util';
 import dataFilter from './dataFilter.util';
 
-const analyticsUtility = {
+const analytics = {
   /**
     *
     * @param {Array} pricesData 2D array with unix time and daily price [unixtime ms, price]
@@ -41,6 +41,7 @@ const analyticsUtility = {
    *
    * @param {Array} volumeData 2D array with unix time and daily volume [unixtime ms, volume]
    * @returns {Object}{ highestVolumeDay, highestVolume } highestVolumeDay = dd-mm-yyyy
+   * complexity = Linear
    */
   getHighestVolumeAndDate: (volumeDataUnfiltered) => {
     const volumeData = dataFilter.filterMidnightDatapointsFromData(volumeDataUnfiltered);
@@ -67,6 +68,7 @@ const analyticsUtility = {
    * @param {Array} pricesData  2D array with unix time and price [unixtime ms, price]
    * @returns {Object} { buyDate, sellDate }
    * Returns the best day to buy and to sell to maximize profits given a certain date range
+   * complexity = Linear
    */
   bestDayToBuyAndBestDayToSell: (pricesDataUnfiltered) => {
     const pricesData = dataFilter.filterMidnightDatapointsFromData(pricesDataUnfiltered);
@@ -74,7 +76,7 @@ const analyticsUtility = {
 
     for (let i = 0; i < pricesData.length; i += 1) {
       // eslint-disable-next-line max-len
-      const [tempBuyDate, tempSellDate, tempMaxProfitMultiplier] = analyticsUtility.bestDayToSell(pricesData.slice(i));
+      const [tempBuyDate, tempSellDate, tempMaxProfitMultiplier] = analytics.bestDayToSell(pricesData.slice(i));
       if (tempMaxProfitMultiplier > maxProfitMultiplier) {
         buyDate = tempBuyDate;
         sellDate = tempSellDate;
@@ -100,6 +102,7 @@ const analyticsUtility = {
    * startingDate = unixtime ms of the first element in pricesData,
    * maxProfitSellDate = unixtime ms of the highest profit sell date if you bought at startingDate,
    * maxProfitMultiplier = multiplier of money put in
+   * complexity = Linear
    */
   bestDayToSell: (pricesData) => {
     // Set the algorithm beginning day
@@ -124,4 +127,4 @@ const analyticsUtility = {
 
 };
 
-export default analyticsUtility;
+export default analytics;

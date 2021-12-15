@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import analyticsUtility from '../../../../utils/analytics.util';
+import analytics from '../../../../utils/analytics.util';
 
 const BestDayToBuyandBestDayToSellResult = function Result({ pricesData }) {
-  const { buyDate, sellDate } = analyticsUtility.bestDayToBuyAndBestDayToSell(pricesData);
+  const { buyDate, sellDate } = analytics.bestDayToBuyAndBestDayToSell(pricesData);
 
   if (pricesData.length < 1) {
     return <div className="cryptoAnalyticResult">Invalid input</div>;
