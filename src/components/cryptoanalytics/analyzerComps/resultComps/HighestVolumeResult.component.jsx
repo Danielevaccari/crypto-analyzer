@@ -12,7 +12,7 @@ const HighestVolumeResult = function DisplayHighestVolumeResult({ volumeData }) 
           Highest Volume and date:
           <div style={{ fontSize: '.8rem' }}>
             <span>
-              {highestVolume > 0 ? new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(highestVolume) : ''}
+              {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(highestVolume)}
               <span>  </span>
               {highestVolumeDay}
             </span>
