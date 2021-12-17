@@ -8,7 +8,7 @@ const Feature = function WhatToMeasure({ analyticFeature, setanalyticFeature }) 
       <select value={analyticFeature} onChange={(e) => setanalyticFeature(e.target.value)} className="modeSelectorSelect">
         <option value="downward">Downward trend</option>
         <option value="volume">Highest trading volume</option>
-        <option value="timemachine">Time machine</option>
+        <option value="timemachine">Best day buy/sell</option>
       </select>
     </div>
   );

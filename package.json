@@ -19,7 +19,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "jest --setupFiles dotenv/config",
-    "eject": "react-scripts eject"
+    "eslint:fix": "eslint 'src/**/*.{jsx,js}/' --fix"
   },
   "eslintConfig": {
     "extends": [
@@ -50,7 +50,6 @@
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.27.1",
     "eslint-plugin-react-hooks": "^4.3.0",
-    "jest": "26.6.0",
-    "react-test-renderer": "^17.0.2"
+    "jest": "26.6.0"
   }
 }

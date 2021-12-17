@@ -4,9 +4,9 @@ import dataFilter from './dataFilter.util';
 const analytics = {
   /**
     *
-    * @param {Array} pricesData 2D array with unix time and daily price [unixtime ms, price]
-    * @returns {Integer} Number of decreasing days, “Price of day N is lower than price of day N-1”
-    * complexity = Linear in length of array
+    * @param {Array<Array<Number, Number>>} pricesData  [[unixtime ms, price], ...]
+    * @returns {Number} Number of consecutive decreasing days in price
+    * complexity = Linear
     */
   calculateLongestDownwardTrendInDays: (pricesDataUnfiltered) => {
     // Longest downward trend day streak
@@ -39,8 +39,8 @@ const analytics = {
 
   /**
    *
-   * @param {Array} volumeData 2D array with unix time and daily volume [unixtime ms, volume]
-   * @returns {Object}{ highestVolumeDay, highestVolume } highestVolumeDay = dd-mm-yyyy
+   * @param {Array<Array<Number, Number>>} volumeData [[unixtime ms, volume], ...]
+   * @returns {Object<String, String>}{ highestVolumeDay, highestVolume } dd-mm-yyyy
    * complexity = Linear
    */
   getHighestVolumeAndDate: (volumeDataUnfiltered) => {
@@ -59,16 +59,17 @@ const analytics = {
     }
     // Transform unixDate to dd-mm-yyyy and floor and stringify volume
     highestVolumeDay = timeAndDateTransformations.getDateFromUnixTime(highestVolumeDay);
+    // Less than 1 euro not relevant so floor result
     highestVolume = Math.floor(highestVolume).toString();
     return { highestVolumeDay, highestVolume };
   },
 
   /**
    *
-   * @param {Array} pricesData  2D array with unix time and price [unixtime ms, price]
-   * @returns {Object} { buyDate, sellDate }
+   * @param {Array<Array<Number, Number>>} pricesData  [[unixtime ms, price], ...]
+   * @returns {Object<String, String>}
    * Returns the best day to buy and to sell to maximize profits given a certain date range
-   * complexity = Linear
+   * complexity = N^2
    */
   bestDayToBuyAndBestDayToSell: (pricesDataUnfiltered) => {
     const pricesData = dataFilter.filterMidnightDatapointsFromData(pricesDataUnfiltered);
@@ -96,12 +97,12 @@ const analytics = {
 
   /**
    *
-   * @param {Array} pricesData 2D array with unix time and daily price [unixtime ms, price]
-   * @returns {Array} [startingDate, bestSellDate, maxProfitMultiplier, holdMultiplier]
+   * @param {Array<Array<Number, Number>>} pricesData  [[unixtime ms, price], ...]
+   * @returns {Array<Number, {Number | String}, Number>}
    *  when no profit to be made (highestProfitMultiplier <= 1)
-   * startingDate = unixtime ms of the first element in pricesData,
-   * maxProfitSellDate = unixtime ms of the highest profit sell date if you bought at startingDate,
-   * maxProfitMultiplier = multiplier of money put in
+   * startingDate = First day in the param array,
+   * maxProfitSellDate = max profit sell date,
+   * maxProfitMultiplier = max profit multiplier
    * complexity = Linear
    */
   bestDayToSell: (pricesData) => {

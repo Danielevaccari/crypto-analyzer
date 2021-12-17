@@ -1,15 +1,15 @@
 const timeAndDateTransformations = {
   /**
  *
- * @param {Date} date A date in yyyy-mm-dd
- * @returns {Number} milliseconds
+ * @param {String} date yyyy-mm-dd
+ * @returns {Number} ms
  */
   getUnixtime: (date) => new Date(date).getTime() / 1000,
 
   /**
   *
   * @param {Number} milliseconds
-  * @returns {Date} A date in dd-mm-yyyy
+  * @returns {String} dd-mm-yyyy
   */
   getDateFromUnixTime: (unixtime) => new Date(unixtime).toLocaleDateString(),
 

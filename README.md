@@ -10,11 +10,11 @@ Dependencies
 
 1.  react 17.0.2
 2.  node 14.18.1
-3.  yarn 1.22.11
+3.  yarn 1.22.11 / npm 6.14.15
 ---
 Open project on your local instructions
 
-Prerequisities: node, git
+Prerequisities: node, git, yarn / npm
 
 1. git clone https://github.com/Danielevaccari/crypto-analyzer.git
 2. touch .env; echo "REACT_APP_COINBASE_API=https://api.coingecko.com/api" >> .env
@@ -27,9 +27,8 @@ Other commands
 
 Test: 
 
-
 1.  yarn test --coverage / npm test --coverage
 
 Fix eslint
 
-1.  eslint 'src/**/*.{jsx,js}/' --fix
+1. yarn eslint:fix / npm run eslint:fix

@@ -9,7 +9,6 @@ const Analyzer = function CryptoAnalyzer() {
   const [marketData, setmarketData] = useState({ prices: [], total_volumes: [] });
   const [startdate, setstartdate] = useState();
   const [enddate, setenddate] = useState();
-
   const [analyticFeature, setanalyticFeature] = useState('downward');
 
   const handleMarketDataFetching = async () => {

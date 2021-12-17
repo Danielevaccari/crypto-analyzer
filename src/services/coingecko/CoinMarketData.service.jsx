@@ -3,8 +3,8 @@ import timeAndDateTransformations from '../../utils/timeAndDateTransformations.u
 
 const CoinMarketData = {
   /**
-   * @param {date} startDate  yyyy-mm-dd
-   * @param {date} endDate  yyyy-mm-dd
+   * @param {String} startDate yyyy-mm-dd
+   * @param {String} endDate yyyy-mm-dd
    * @returns {object} returns market data for specific cryptocoin between two dates
    */
   getCoinMarketDataByDaterange: async (startDate, endDate) => {
