@@ -10,7 +10,7 @@ const ResultSelector = function SelectWantedResulToDisplay({
 }) {
   return (
     <>
-      <div className="cryptoAnalyticsResult">
+      <div className="crypto-analytics-result">
         {analyticFeature === 'downward' ? (
           <DownwardTrendResult
             pricesData={pricesData}

@@ -18,5 +18,7 @@
     "plugins": [
         "react"
     ],
-    "rules": {}
+    "rules": {
+        "linebreak-style": 1
+    }
 }

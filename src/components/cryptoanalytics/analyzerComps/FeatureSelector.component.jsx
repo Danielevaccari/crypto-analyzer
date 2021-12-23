@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 
 const Feature = function WhatToMeasure({ analyticFeature, setanalyticFeature }) {
   return (
-    <div className="modeSelectorContainer">
+    <div className="mode-selector-container">
       <div style={{ marginLeft: '5px' }}>Feature</div>
-      <select value={analyticFeature} onChange={(e) => setanalyticFeature(e.target.value)} className="modeSelectorSelect">
+      <select value={analyticFeature} onChange={(e) => setanalyticFeature(e.target.value)} className="mode-selector-select">
         <option value="downward">Downward trend</option>
         <option value="volume">Highest trading volume</option>
         <option value="timemachine">Best day buy/sell</option>

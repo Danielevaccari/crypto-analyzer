@@ -3,14 +3,15 @@ import PropTypes from 'prop-types';
 
 const Result = function Daterange({ setstartdate, setenddate }) {
   return (
+
     <>
-      <div className="dateSelectorContainer">
+      <div className="date-selector-container">
         <div style={{ marginLeft: '5px' }}>From</div>
-        <input id="startDate" required className="dateInputsForCryptoanalytics" onChange={(e) => setstartdate(e.target.value)} type="date" name="startdate" />
+        <input id="startDate" required className="date-inputs-for-cryptoanalytics" onChange={(e) => setstartdate(e.target.value)} type="date" name="startdate" />
       </div>
-      <div className="dateSelectorContainer">
+      <div className="date-selector-container">
         <div style={{ marginLeft: '5px' }}>To</div>
-        <input id="endDate" required className="dateInputsForCryptoanalytics" onChange={(e) => setenddate(e.target.value)} type="date" name="enddate" />
+        <input id="endDate" required className="date-inputs-for-cryptoanalytics" onChange={(e) => setenddate(e.target.value)} type="date" name="enddate" />
       </div>
     </>
   );

@@ -6,7 +6,7 @@ const HighestVolumeResult = function DisplayHighestVolumeResult({ volumeData }) 
   const { highestVolumeDay, highestVolume } = analytics.getHighestVolumeAndDate(volumeData);
 
   return (
-    <div className="cryptoAnalyticResult">
+    <div className="crypto-analytics-result">
       {highestVolumeDay !== 'Invalid Date' ? (
         <span>
           Highest Volume and date:

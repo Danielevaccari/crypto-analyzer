@@ -6,11 +6,11 @@ const DownwardTrendResult = function DisplayDownwardTrendresult({ pricesData }) 
   const resultDownward = analytics.calculateLongestDownwardTrendInDays(pricesData);
 
   if (pricesData.length < 1) {
-    return <div className="cryptoAnalyticResult">Invalid input</div>;
+    return <div className="crypto-analytics-result">Invalid input</div>;
   }
 
   return (
-    <div className="cryptoAnalyticResult">
+    <div className="crypto-analytics-result">
       {resultDownward !== 0 ? (
         <span>
           {' '}

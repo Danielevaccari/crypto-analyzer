@@ -16,17 +16,17 @@ const Analyzer = function CryptoAnalyzer() {
   };
 
   return (
-    <div className="cryptoAnalyticsWrapper">
+    <div className="crypto-analytics-wrapper">
       {/* Header */}
-      <h1 className="cryptoAnalyzerHeader">Bitcoin Analyzer</h1>
-      <div className="cryptoAnalyticsContainer">
-        <div className="cryptoAnalyticsContainerTop">
+      <h1 className="crypto-analyzer-header">Bitcoin Analyzer</h1>
+      <div className="crypto-analytics-container">
+        <div className="crypto-analytics-container-top">
           <FeatureSelector
             analyticFeature={analyticFeature}
             setanalyticFeature={setanalyticFeature}
           />
         </div>
-        <div className="cryptoAnalyticsContainerMiddle">
+        <div className="crypto-analytics-container-middle">
           <DaterangeSelector
             startdate={startdate}
             enddate={enddate}
@@ -34,7 +34,7 @@ const Analyzer = function CryptoAnalyzer() {
             setstartdate={setstartdate}
           />
         </div>
-        <div className="cryptoAnalyticsContainerBottom">
+        <div className="crypto-analytics-container-bottom">
           <ResultSelector
             analyticFeature={analyticFeature}
             handleMarketDataFetching={handleMarketDataFetching}
