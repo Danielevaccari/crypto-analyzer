@@ -6,7 +6,7 @@ const BestDayToBuyandBestDayToSellResult = function Result({ pricesData }) {
   const { buyDate, sellDate } = analytics.bestDayToBuyAndBestDayToSell(pricesData);
 
   if (pricesData.length < 1) {
-    return <div className="crypto-analytics-result">Invalid input</div>;
+    return <div className="crypto-analytics-result">Check dates</div>;
   }
 
   return (

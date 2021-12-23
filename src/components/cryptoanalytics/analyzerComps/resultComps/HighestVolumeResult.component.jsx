@@ -19,7 +19,7 @@ const HighestVolumeResult = function DisplayHighestVolumeResult({ volumeData }) 
           </div>
         </span>
       )
-        : 'Invalid input'}
+        : 'Check dates'}
     </div>
   );
 };

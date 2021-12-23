@@ -1,6 +1,6 @@
 .crypto-analytics-result {
   background-color: rgb(77, 77, 77);
-  color           : rgb(251, 255, 0);
+  color           : rgb(255, 249, 66);
   height          : 50%;
   flex            : 80%;
   max-width       : 300px;
@@ -9,14 +9,15 @@
   align-items     : center;
   margin          : 10px 5px 10px 5px;
   font-size       : .7rem;
+  border-radius   : 3px;
 }
 
 .crypto-result-button {
-  background-color: rgb(235, 228, 228);
+  background-color: rgb(255, 255, 255);
   height          : 50px;
   max-width       : 70px;
-  border-radius   : 100%;
+  border-radius   : 200px;
   flex            : 20%;
   border          : black solid 1px;
-  box-shadow      : -3px -2px 5px #272727;
+  box-shadow      : -1px -1px 5px #272727;
 }

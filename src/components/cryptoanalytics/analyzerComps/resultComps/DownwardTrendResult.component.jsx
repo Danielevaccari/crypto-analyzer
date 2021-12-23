@@ -6,7 +6,7 @@ const DownwardTrendResult = function DisplayDownwardTrendresult({ pricesData }) 
   const resultDownward = analytics.calculateLongestDownwardTrendInDays(pricesData);
 
   if (pricesData.length < 1) {
-    return <div className="crypto-analytics-result">Invalid input</div>;
+    return <div className="crypto-analytics-result">Check dates</div>;
   }
 
   return (
