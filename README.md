@@ -1,5 +1,7 @@
 Crypto Analyzer - Daniele Johannes Vaccari
 
+Link: tender-aryabhata-fa5705.netlify.app
+
 Crypto Analyzer
 
 Description
