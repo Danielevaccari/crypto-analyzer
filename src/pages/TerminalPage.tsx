@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { useSearchParams } from 'react-router';
 import { ChartPaletteContext, type ChartColors } from '../components/charts/theme';
-import { BookBody, CandlesBody, CorrBody, DepthBody, HeatBody, SpreadBody, StatsBody, TapeBody, type TerminalContext } from '../components/terminal/panels';
+import { BookBody, CandlesBody, CorrBody, DepthBody, HeatBody, SpreadBody, StatsBody, TapeBody } from '../components/terminal/panels';
+import type { TerminalContext } from '../components/terminal/shared';
+import { FlowBody, KpiStrip, MoversBody, RangeBody, SparksBody, VolumeBody } from '../components/terminal/tiles';
 import { LiveDot } from '../components/ui';
 import { useTickers } from '../hooks/market';
 import { COINS } from '../lib/coins';
@@ -59,6 +61,7 @@ export default function TerminalPage() {
   const { quote, exchange } = useSettings();
   const [params, setParams] = useSearchParams();
   const size = parseLayoutSize(params.get('n'));
+  const showKpi = params.get('k') !== '0';
   const panels = useMemo(() => parsePanels(params.get('p'), size), [params, size]);
   const phone = useSyncExternalStore(subscribePhone, () => phoneQuery().matches);
   const [active, setActive] = useState(0);
@@ -112,12 +115,30 @@ export default function TerminalPage() {
                 </button>
               ))}
             </span>
+            <button
+              type="button"
+              className={`term-toggle ${showKpi ? 'active' : ''}`}
+              aria-pressed={showKpi}
+              onClick={() =>
+                setParams(
+                  (q) => {
+                    if (showKpi) q.set('k', '0');
+                    else q.delete('k');
+                    return q;
+                  },
+                  { replace: true },
+                )
+              }
+            >
+              KPI
+            </button>
             <LiveDot status={status} label={source ? EXCHANGES[source].name : undefined} />
             <Clock />
           </span>
         </div>
 
         <TickerStrip tickers={tickers} quote={quote} />
+        {showKpi && <KpiStrip ctx={ctx} />}
 
         {phone && (
           <div className="term-tabs" role="tablist">
@@ -224,8 +245,18 @@ function PanelBody({ spec, ctx }: { spec: PanelSpec; ctx: TerminalContext }) {
       return <BookBody key={spec.symbol} spec={spec} ctx={ctx} />;
     case 'tape':
       return <TapeBody key={spec.symbol} spec={spec} ctx={ctx} />;
+    case 'flow':
+      return <FlowBody key={spec.symbol} spec={spec} ctx={ctx} />;
     case 'heat':
       return <HeatBody spec={spec} ctx={ctx} />;
+    case 'sparks':
+      return <SparksBody spec={spec} ctx={ctx} />;
+    case 'movers':
+      return <MoversBody spec={spec} ctx={ctx} />;
+    case 'volume':
+      return <VolumeBody spec={spec} ctx={ctx} />;
+    case 'range':
+      return <RangeBody spec={spec} ctx={ctx} />;
     case 'corr':
       return <CorrBody spec={spec} ctx={ctx} />;
     case 'stats':

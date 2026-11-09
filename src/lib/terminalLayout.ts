@@ -1,7 +1,7 @@
 import { COIN_BY_SYMBOL } from './coins';
 import type { Interval } from './types';
 
-export type PanelType = 'candles' | 'depth' | 'book' | 'tape' | 'heat' | 'corr' | 'stats' | 'spread';
+export type PanelType = 'candles' | 'depth' | 'book' | 'tape' | 'flow' | 'heat' | 'sparks' | 'movers' | 'volume' | 'range' | 'corr' | 'stats' | 'spread';
 
 export interface PanelSpec {
   type: PanelType;
@@ -16,13 +16,18 @@ export const PANEL_TYPES: { value: PanelType; label: string; needsSymbol: boolea
   { value: 'depth', label: 'Depth', needsSymbol: true },
   { value: 'book', label: 'Order book', needsSymbol: true },
   { value: 'tape', label: 'Trades tape', needsSymbol: true },
+  { value: 'flow', label: 'Trade flow', needsSymbol: true },
   { value: 'heat', label: 'Heatmap', needsSymbol: false },
+  { value: 'sparks', label: '7d sparklines', needsSymbol: false },
+  { value: 'movers', label: 'Movers', needsSymbol: false },
+  { value: 'volume', label: 'Volume share', needsSymbol: false },
+  { value: 'range', label: '24h ranges', needsSymbol: false },
   { value: 'corr', label: 'Correlation', needsSymbol: false },
   { value: 'stats', label: 'Stats table', needsSymbol: false },
   { value: 'spread', label: 'Exchange spread', needsSymbol: false },
 ];
 
-export const LAYOUTS = [1, 2, 4, 6] as const;
+export const LAYOUTS = [1, 2, 4, 6, 9, 12] as const;
 export type LayoutSize = (typeof LAYOUTS)[number];
 export const TERMINAL_INTERVALS: Interval[] = ['1m', '5m', '15m', '1h', '6h', '1d'];
 
@@ -35,6 +40,12 @@ export const DEFAULT_PANELS: PanelSpec[] = [
   spec('heat'),
   spec('stats'),
   spec('corr'),
+  spec('movers'),
+  spec('sparks'),
+  spec('volume'),
+  spec('flow', 'BTC'),
+  spec('range'),
+  spec('spread'),
 ];
 
 const TYPES = new Set<string>(PANEL_TYPES.map((p) => p.value));
