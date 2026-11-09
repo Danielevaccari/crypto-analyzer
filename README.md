@@ -2,7 +2,7 @@
 
 Live crypto markets, candlestick charts, order books and trend analysis, powered by the free public APIs of Coinbase and Binance. No API key, no backend.
 
-**Live:** https://tender-aryabhata-fa5705.netlify.app
+**Live:** https://cryptowindow.netlify.app
 
 ## Features
 
