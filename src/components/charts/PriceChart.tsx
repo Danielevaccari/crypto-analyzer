@@ -59,16 +59,21 @@ interface Props {
 
 const ts = (t: number) => t as UTCTimestamp;
 
+// Stable defaults: fresh `[]` literals would re-run the effects below on every render.
+const NO_OVERLAYS: Overlay[] = [];
+const NO_BANDS: Band[] = [];
+const NO_MARKERS: ChartMarker[] = [];
+
 export default function PriceChart({
   candles,
   quote,
   type = 'candles',
   intraday = false,
   liveBars,
-  overlays = [],
+  overlays = NO_OVERLAYS,
   rsi = null,
-  bands = [],
-  markers = [],
+  bands = NO_BANDS,
+  markers = NO_MARKERS,
   focus = null,
   height = 420,
 }: Props) {
@@ -154,14 +159,20 @@ export default function PriceChart({
       if (!bar || p.time === undefined) return setHover(null);
       const b = bar as { open?: number; high?: number; low?: number; close?: number; value?: number };
       const close = b.close ?? b.value ?? 0;
-      setHover({
+      const next: Candle = {
         time: p.time as number,
         open: b.open ?? close,
         high: b.high ?? close,
         low: b.low ?? close,
         close,
         volume: (vol as { value?: number } | undefined)?.value ?? 0,
-      });
+      };
+      // Setting identical values again would re-render and can re-trigger the crosshair event.
+      setHover((prev) =>
+        prev && prev.time === next.time && prev.open === next.open && prev.high === next.high && prev.low === next.low && prev.close === next.close && prev.volume === next.volume
+          ? prev
+          : next,
+      );
     };
     c.subscribeCrosshairMove(onMove);
     return () => {

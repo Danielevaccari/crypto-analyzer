@@ -55,7 +55,10 @@ export default function LineChart({ lines, format, intraday = false, zeroLine = 
         const d = p.seriesData.get(s) as { value?: number } | undefined;
         if (d?.value !== undefined) values.set(id, d.value);
       }
-      setHover({ time: p.time as number, values });
+      setHover((prev) => {
+        const same = prev && prev.time === (p.time as number) && [...values].every(([k, v]) => prev.values.get(k) === v);
+        return same ? prev : { time: p.time as number, values };
+      });
     };
     c.subscribeCrosshairMove(onMove);
     return () => {

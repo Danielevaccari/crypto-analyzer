@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
-import { Navigate, NavLink, Route, Routes } from 'react-router';
+import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router';
+import ErrorBoundary from './components/ErrorBoundary';
 import { Segmented } from './components/ui';
 import type { ExchangeId, Quote } from './lib/types';
 import MarketsPage from './pages/MarketsPage';
@@ -11,6 +12,7 @@ const ComparePage = lazy(() => import('./pages/ComparePage'));
 const SpreadPage = lazy(() => import('./pages/SpreadPage'));
 
 export default function App() {
+  const { pathname } = useLocation();
   const { quote, setQuote, exchange, setExchange, resolvedTheme, toggleTheme } = useSettings();
 
   return (
@@ -53,6 +55,7 @@ export default function App() {
         </div>
       </header>
       <main className="main">
+        <ErrorBoundary resetKey={pathname}>
         <Suspense fallback={null}>
           <Routes>
             <Route path="/" element={<MarketsPage />} />
@@ -63,6 +66,7 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
+        </ErrorBoundary>
       </main>
     </div>
   );
