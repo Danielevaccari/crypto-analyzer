@@ -121,8 +121,8 @@ export default function PriceChart({
           })
         : c.addSeries(AreaSeries, {
             lineColor: colors.accent,
-            topColor: alpha(colors.accent, 0.22),
-            bottomColor: alpha(colors.accent, 0),
+            topColor: alpha(colors.accent, 0.1),
+            bottomColor: alpha(colors.accent, 0.1),
             lineWidth: 2,
             priceLineStyle: LineStyle.Dotted,
           });

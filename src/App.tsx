@@ -18,7 +18,7 @@ export default function App() {
       <header className="header">
         <NavLink to="/" className="brand" aria-label="Crypto Analyzer home">
           <svg width="22" height="22" viewBox="0 0 32 32" aria-hidden>
-            <rect width="32" height="32" rx="8" fill="var(--accent)" />
+            <rect width="32" height="32" rx="4" fill="var(--accent)" />
             <path d="M7 21l6-7 4 4 8-9" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <span className="brand-text">Crypto Analyzer</span>

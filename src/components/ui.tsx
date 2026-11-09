@@ -1,4 +1,4 @@
-import { useId, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { COIN_BY_SYMBOL } from '../lib/coins';
 import { fmtPct, trendClass } from '../lib/format';
 import type { StreamStatus } from '../lib/types';
@@ -74,7 +74,6 @@ export function LiveDot({ status, label }: { status: StreamStatus; label?: strin
 
 /** Tiny SVG trend line with a soft fill. */
 export function Sparkline({ values, width = 112, height = 32, color }: { values: number[]; width?: number; height?: number; color?: string }) {
-  const id = useId();
   if (values.length < 2) return <span className="spark-empty" style={{ width, height }} />;
   const min = Math.min(...values);
   const max = Math.max(...values);
@@ -84,13 +83,6 @@ export function Sparkline({ values, width = 112, height = 32, color }: { values:
   const stroke = color ?? (values[values.length - 1]! >= values[0]! ? 'var(--up)' : 'var(--down)');
   return (
     <svg className="sparkline" width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden>
-      <defs>
-        <linearGradient id={id} x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0" stopColor={stroke} stopOpacity="0.22" />
-          <stop offset="1" stopColor={stroke} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d={`${line}L${width},${height}L0,${height}Z`} fill={`url(#${id})`} />
       <path d={line} fill="none" stroke={stroke} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
     </svg>
   );
