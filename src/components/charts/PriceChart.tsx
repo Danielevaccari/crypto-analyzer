@@ -54,7 +54,8 @@ interface Props {
   markers?: ChartMarker[];
   /** Zoom to this range (UTC seconds); null fits all data. */
   focus?: { from: number; to: number } | null;
-  height?: number;
+  /** Pixels, or a CSS size such as "100%" to fill the parent. */
+  height?: number | string;
 }
 
 const ts = (t: number) => t as UTCTimestamp;
@@ -260,7 +261,7 @@ export default function PriceChart({
   const change = shown && prev ? ((shown.close - prev.close) / prev.close) * 100 : null;
 
   return (
-    <div className="chart" style={{ height: height + (hasRsi ? 90 : 0) }}>
+    <div className="chart" style={{ height: typeof height === 'number' ? height + (hasRsi ? 90 : 0) : height }}>
       {shown && (
         <div className="chart-legend">
           <span className="muted">{intraday ? new Date(shown.time * 1000).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : fmtDate(shown.time)}</span>

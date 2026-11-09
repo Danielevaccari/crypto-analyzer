@@ -11,6 +11,7 @@ Live crypto markets, candlestick charts, order books and trend analysis, powered
 - **Analyze**: for any coin and date range (presets or custom, back to 2017): longest downtrend, highest volume day, best day to buy and sell, max drawdown, volatility, total return, period high/low and a monthly returns heatmap. Click a result to highlight it on the chart.
 - **Compare**: up to five coins rebased to 0%, with drawdown and volatility side by side.
 - **Spread**: live Coinbase vs Binance price gap for every coin.
+- **Terminal**: a full-screen multi-panel view (1, 2, 4 or 6 panels, saved in the URL) in a green-on-black terminal style. Each panel can be live candles with SMA/EMA/RSI, order book depth, order book, trades tape, 24h heatmap, 90-day correlation matrix, stats table (24h/7d/30d change and volatility) or the exchange spread. Click a heatmap tile or stats row to load that coin into the first coin panel. On phones the panels become tabs.
 - USD or EUR, Coinbase or Binance as the primary source (automatic fallback to the other if one is unreachable), light/dark mode, and a layout that works from 375px up.
 
 ## Stack
@@ -48,7 +49,7 @@ src/
   lib/analysis/    Pure analysis and indicator functions (unit tested)
   hooks/           Data hooks: tickers, candles, trades, order book
   components/      Charts and UI building blocks
-  pages/           Markets, Coin, Analyze, Compare, Spread
+  pages/           Markets, Coin, Analyze, Compare, Spread, Terminal
 ```
 
 Not financial advice.

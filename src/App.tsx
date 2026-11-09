@@ -10,6 +10,7 @@ const CoinPage = lazy(() => import('./pages/CoinPage'));
 const AnalyzePage = lazy(() => import('./pages/AnalyzePage'));
 const ComparePage = lazy(() => import('./pages/ComparePage'));
 const SpreadPage = lazy(() => import('./pages/SpreadPage'));
+const TerminalPage = lazy(() => import('./pages/TerminalPage'));
 
 export default function App() {
   const { pathname } = useLocation();
@@ -33,6 +34,7 @@ export default function App() {
           <NavLink to="/analyze">Analyze</NavLink>
           <NavLink to="/compare">Compare</NavLink>
           <NavLink to="/spread">Spread</NavLink>
+          <NavLink to="/terminal">Terminal</NavLink>
         </nav>
         <div className="header-tools">
           <Segmented<Quote>
@@ -63,6 +65,7 @@ export default function App() {
             <Route path="/analyze" element={<AnalyzePage />} />
             <Route path="/compare" element={<ComparePage />} />
             <Route path="/spread" element={<SpreadPage />} />
+            <Route path="/terminal" element={<TerminalPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>

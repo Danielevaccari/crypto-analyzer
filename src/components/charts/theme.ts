@@ -1,5 +1,5 @@
 import { ColorType, CrosshairMode, LineStyle, type DeepPartial, type ChartOptions, type Time, type TickMarkType } from 'lightweight-charts';
-import { useMemo } from 'react';
+import { createContext, useContext, useMemo } from 'react';
 import { useSettings } from '../../settings/context';
 
 export interface ChartColors {
@@ -15,7 +15,11 @@ export interface ChartColors {
   downSoft: string;
   band: string;
   warn: string;
+  font: string;
 }
+
+/** Lets a screen (e.g. the terminal) supply its own chart colours instead of the app theme tokens. */
+export const ChartPaletteContext = createContext<ChartColors | null>(null);
 
 /** Hex colour with alpha, e.g. alpha('#4f6bff', 0.2). The chart canvas does not understand color-mix(). */
 export function alpha(hex: string, a: number): string {
@@ -30,7 +34,8 @@ const cssVar = (name: string) => getComputedStyle(document.documentElement).getP
 /** Chart colours resolved from the CSS tokens of the active theme. */
 export function useChartColors(): ChartColors {
   const { resolvedTheme } = useSettings();
-  return useMemo(
+  const override = useContext(ChartPaletteContext);
+  const themed = useMemo<ChartColors>(
     () => ({
       bg: cssVar('--bg'),
       text: cssVar('--text'),
@@ -44,11 +49,13 @@ export function useChartColors(): ChartColors {
       downSoft: cssVar('--down-soft'),
       band: cssVar('--band'),
       warn: cssVar('--warn'),
+      font: cssVar('--font') || 'sans-serif',
     }),
     // The theme attribute is applied in an effect before charts read it; re-resolve whenever it changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [resolvedTheme],
   );
+  return override ?? themed;
 }
 
 const seconds = (t: Time) => (typeof t === 'number' ? t : 0);
@@ -61,7 +68,7 @@ export function baseOptions(c: ChartColors, opts: { intraday?: boolean } = {}): 
     layout: {
       background: { type: ColorType.Solid, color: 'transparent' },
       textColor: c.muted,
-      fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif',
+      fontFamily: c.font,
       fontSize: 11,
       attributionLogo: false,
       panes: { separatorColor: c.border, separatorHoverColor: c.grid, enableResize: false },
