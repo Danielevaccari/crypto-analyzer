@@ -6,8 +6,8 @@ import { correlationMatrix } from '../../lib/analysis/correlation';
 import { annualizedVolatility, pct } from '../../lib/analysis/stats';
 import { withFallback } from '../../lib/exchanges';
 import { fmtCompact, fmtPct, fmtPrice } from '../../lib/format';
-import { Skeleton, Sparkline } from '../ui';
-import { BASES, useDailySeries, type PanelProps, type TerminalContext } from './shared';
+import { Flash, Skeleton, Sparkline } from '../ui';
+import { BASES, useDailySeries, usePulse, type PanelProps, type TerminalContext } from './shared';
 
 const HOUR = 3600;
 const sortedBy = <T,>(rows: T[], key: (r: T) => number) => [...rows].sort((a, b) => key(b) - key(a));
@@ -193,11 +193,14 @@ interface Kpi {
   value: string;
   sub?: string;
   tone?: 'up' | 'down' | '';
+  /** When set, the value flashes green or red as this number moves */
+  num?: number;
 }
 
 /** Dense row of headline numbers derived from the live tickers and daily history. */
 export function KpiStrip({ ctx }: { ctx: TerminalContext }) {
   const { series, loaded, total } = useDailySeries(ctx);
+  const pulse = usePulse(ctx);
   const matrix = useMemo(() => (loaded === total ? correlationMatrix(series) : null), [series, loaded, total]);
   const rows = BASES.flatMap((s) => {
     const t = ctx.tickers[s];
@@ -232,11 +235,12 @@ export function KpiStrip({ ctx }: { ctx: TerminalContext }) {
   const ratioOpen = btc && eth ? eth.t.open24h / btc.t.open24h : null;
 
   const kpis: Kpi[] = [
+    { label: 'Market pulse', value: `${Math.round(pulse.score)}`, sub: pulse.label, tone: pulse.score >= 55 ? 'up' : pulse.score <= 45 ? 'down' : '', num: Math.round(pulse.score) },
     { label: 'Volume 24h', value: fmtCompact(vol, ctx.quote), sub: `${rows.length} pairs` },
     { label: 'Volume leader', value: leader.s, sub: `${((leader.t.volume24h / vol) * 100).toFixed(0)}% of volume` },
     { label: 'BTC share', value: btc ? `${((btc.t.volume24h / vol) * 100).toFixed(0)}%` : '–', sub: 'of volume' },
     { label: 'Breadth', value: `▲${up} ▼${rows.length - up}`, sub: 'advancers / decliners', tone: up >= rows.length / 2 ? 'up' : 'down' },
-    { label: 'Avg 24h', value: fmtPct(avg), sub: 'equal-weighted', tone: avg >= 0 ? 'up' : 'down' },
+    { label: 'Avg 24h', value: fmtPct(avg), sub: 'equal-weighted', tone: avg >= 0 ? 'up' : 'down', num: Math.round(avg * 100) / 100 },
     { label: 'Top gainer', value: `${best.s} ${fmtPct(best.ch)}`, tone: best.ch >= 0 ? 'up' : 'down' },
     { label: 'Top loser', value: `${worst.s} ${fmtPct(worst.ch)}`, tone: worst.ch >= 0 ? 'up' : 'down' },
     {
@@ -244,6 +248,7 @@ export function KpiStrip({ ctx }: { ctx: TerminalContext }) {
       value: ratio === null ? '–' : ratio.toFixed(4),
       sub: ratio !== null && ratioOpen ? `${fmtPct(pct(ratioOpen, ratio))} 24h` : undefined,
       tone: ratio !== null && ratioOpen ? (ratio >= ratioOpen ? 'up' : 'down') : '',
+      num: ratio === null ? undefined : Math.round(ratio * 10000) / 10000,
     },
     { label: 'Near 24h high', value: `${nearHigh}`, sub: `${nearLow} near low` },
     { label: 'Avg vol 30d', value: avgVol === null ? '…' : `${avgVol.toFixed(0)}%`, sub: 'annualised' },
@@ -255,10 +260,68 @@ export function KpiStrip({ ctx }: { ctx: TerminalContext }) {
       {kpis.map((k) => (
         <div className="kpi" key={k.label}>
           <span className="kpi-label">{k.label}</span>
-          <span className={`kpi-value ${k.tone ?? ''}`}>{k.value}</span>
+          <span className={`kpi-value ${k.tone ?? ''}`}>{k.num === undefined ? k.value : <Flash value={k.num}>{k.value}</Flash>}</span>
           {k.sub && <span className="kpi-sub">{k.sub}</span>}
         </div>
       ))}
+    </div>
+  );
+}
+
+const ZONES = [
+  { from: 0, to: 20, tone: "var(--down)", alpha: 0.95 },
+  { from: 20, to: 40, tone: "var(--down)", alpha: 0.5 },
+  { from: 40, to: 60, tone: "var(--faint)", alpha: 0.7 },
+  { from: 60, to: 80, tone: "var(--up)", alpha: 0.5 },
+  { from: 80, to: 100, tone: "var(--up)", alpha: 0.95 },
+];
+
+/** Point on the gauge: score 0 is the left end of the half circle, 100 the right end. */
+const arcPoint = (score: number, radius: number) => {
+  const theta = Math.PI * (1 - score / 100);
+  return [100 + radius * Math.cos(theta), 100 - radius * Math.sin(theta)] as const;
+};
+
+const arc = (from: number, to: number, outer: number, inner: number) => {
+  const [x1, y1] = arcPoint(from, outer);
+  const [x2, y2] = arcPoint(to, outer);
+  const [x3, y3] = arcPoint(to, inner);
+  const [x4, y4] = arcPoint(from, inner);
+  return `M${x1},${y1} A${outer},${outer} 0 0 1 ${x2},${y2} L${x3},${y3} A${inner},${inner} 0 0 0 ${x4},${y4} Z`;
+};
+
+/** Gauge of the market-mood composite with the four inputs listed underneath. */
+export function PulseBody({ ctx }: PanelProps) {
+  const pulse = usePulse(ctx);
+  const needle = -90 + (pulse.score / 100) * 180;
+  const tone = pulse.score >= 55 ? "up" : pulse.score <= 45 ? "down" : "";
+  return (
+    <div className="pulse">
+      <svg viewBox="0 0 200 132" className="pulse-gauge" role="img" aria-label={`Market pulse ${Math.round(pulse.score)} out of 100, ${pulse.label}`}>
+        {ZONES.map((z) => (
+          <path key={z.from} d={arc(z.from + 0.6, z.to - 0.6, 92, 70)} fill={z.tone} fillOpacity={z.alpha} />
+        ))}
+        <g className="pulse-needle" style={{ transform: `rotate(${needle}deg)` }}>
+          <path d="M100,100 L97,98 L100,26 L103,98 Z" fill="var(--text)" />
+        </g>
+        <circle cx="100" cy="100" r="5" fill="var(--text)" />
+        <text x="100" y="128" textAnchor="middle" className={`pulse-score ${tone}`}>
+          {Math.round(pulse.score)}
+        </text>
+      </svg>
+      <div className={`pulse-label ${tone}`}>{pulse.label}</div>
+      <div className="pulse-parts">
+        {pulse.components.map((c) => (
+          <div key={c.label} className="pulse-part">
+            <span>{c.label}</span>
+            <span className="bar-lane">
+              <span style={{ left: 0, width: `${c.value}%`, background: c.value >= 50 ? "var(--up)" : "var(--down)" }} />
+            </span>
+            <span>{c.value.toFixed(0)}</span>
+          </div>
+        ))}
+      </div>
+      <p className="pulse-note">Own composite of breadth, momentum, trend and volatility across the 14 coins. Not an official index.</p>
     </div>
   );
 }

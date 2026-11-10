@@ -1,15 +1,22 @@
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { useSearchParams } from 'react-router';
+import { ChartSync, ChartSyncContext } from '../components/charts/sync';
 import { ChartPaletteContext, type ChartColors } from '../components/charts/theme';
-import { BookBody, CandlesBody, CorrBody, DepthBody, HeatBody, SpreadBody, StatsBody, TapeBody } from '../components/terminal/panels';
+import BootSequence from '../components/terminal/BootSequence';
+import { BubblesBody } from '../components/terminal/Bubbles';
+import LayoutMenu, { type LayoutState } from '../components/terminal/LayoutMenu';
+import { BookBody, CandlesBody, CorrBody, DepthBody, SpreadBody, StatsBody, TapeBody } from '../components/terminal/panels';
 import type { TerminalContext } from '../components/terminal/shared';
-import { FlowBody, KpiStrip, MoversBody, RangeBody, SparksBody, VolumeBody } from '../components/terminal/tiles';
+import { FlowBody, KpiStrip, MoversBody, PulseBody, RangeBody, SparksBody, VolumeBody } from '../components/terminal/tiles';
+import { TreemapBody } from '../components/terminal/Treemap';
 import { LiveDot } from '../components/ui';
 import { useTickers } from '../hooks/market';
+import { pct } from '../lib/analysis/stats';
 import { COINS } from '../lib/coins';
+import { isTyping } from '../lib/dom';
 import { EXCHANGES } from '../lib/exchanges';
 import { fmtPct, fmtPrice } from '../lib/format';
-import { pct } from '../lib/analysis/stats';
+import { terminalUrl } from '../lib/terminalPresets';
 import {
   LAYOUTS,
   PANEL_TYPES,
@@ -21,6 +28,7 @@ import {
   type PanelType,
 } from '../lib/terminalLayout';
 import { useSettings } from '../settings/context';
+import { useToast } from '../toast/context';
 
 const BASES = COINS.map((c) => c.symbol);
 
@@ -48,6 +56,30 @@ const subscribePhone = (cb: () => void) => {
   return () => mq.removeEventListener('change', cb);
 };
 
+const readFlag = (key: string, fallback: boolean) => {
+  try {
+    const v = localStorage.getItem(key);
+    return v === null ? fallback : v === '1';
+  } catch {
+    return fallback;
+  }
+};
+const writeFlag = (key: string, value: boolean) => {
+  try {
+    localStorage.setItem(key, value ? '1' : '0');
+  } catch {
+    /* ignore */
+  }
+};
+
+const shouldBoot = () => {
+  try {
+    return !window.matchMedia('(prefers-reduced-motion: reduce)').matches && sessionStorage.getItem('ca:booted') !== '1';
+  } catch {
+    return false;
+  }
+};
+
 function Clock() {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
@@ -59,12 +91,20 @@ function Clock() {
 
 export default function TerminalPage() {
   const { quote, exchange } = useSettings();
+  const toast = useToast();
   const [params, setParams] = useSearchParams();
   const size = parseLayoutSize(params.get('n'));
   const showKpi = params.get('k') !== '0';
   const panels = useMemo(() => parsePanels(params.get('p'), size), [params, size]);
   const phone = useSyncExternalStore(subscribePhone, () => phoneQuery().matches);
   const [active, setActive] = useState(0);
+  const [maxed, setMaxed] = useState<number | null>(null);
+  const [hover, setHover] = useState<number | null>(null);
+  const [drag, setDrag] = useState<{ from: number; over: number | null } | null>(null);
+  const [linked, setLinked] = useState(() => readFlag('ca:link', true));
+  const [crt, setCrt] = useState(() => readFlag('ca:crt', true));
+  const [booting, setBooting] = useState(shouldBoot);
+  const sync = useMemo(() => new ChartSync(), []);
   const { tickers, source, status } = useTickers(BASES, quote, exchange);
 
   // Restyle the whole app (header included) while the terminal is open.
@@ -75,6 +115,38 @@ export default function TerminalPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (crt) document.documentElement.dataset.crt = '1';
+    else delete document.documentElement.dataset.crt;
+    return () => {
+      delete document.documentElement.dataset.crt;
+    };
+  }, [crt]);
+
+  const finishBoot = useCallback(() => {
+    setBooting(false);
+    try {
+      sessionStorage.setItem('ca:booted', '1');
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  // F maximises the panel under the cursor (and restores it); Esc restores.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (isTyping(e.target) || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.key === 'Escape') setMaxed(null);
+      else if (e.key.toLowerCase() === 'f' && !phone) setMaxed((m) => (m !== null ? null : hover));
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [hover, phone]);
+
+  const apply = (layout: LayoutState) => {
+    setMaxed(null);
+    setParams(new URLSearchParams(terminalUrl(layout).split('?')[1]), { replace: true });
+  };
   const write = (next: PanelSpec[], n = size) =>
     setParams(
       (p) => {
@@ -85,6 +157,17 @@ export default function TerminalPage() {
       { replace: true },
     );
   const update = (i: number, patch: Partial<PanelSpec>) => write(panels.map((p, k) => (k === i ? { ...p, ...patch } : p)));
+  const swap = (a: number, b: number) => {
+    const next = [...panels];
+    [next[a], next[b]] = [next[b]!, next[a]!];
+    write(next);
+  };
+  const share = () =>
+    navigator.clipboard
+      .writeText(window.location.href)
+      .then(() => toast({ title: 'Link copied', body: 'Anyone opening it sees this exact layout.', tone: 'info' }))
+      .catch(() => toast({ title: 'Could not copy the link', tone: 'down' }));
+
   const ctx: TerminalContext = {
     quote,
     exchange,
@@ -97,66 +180,116 @@ export default function TerminalPage() {
     },
   };
 
-  const visible = phone ? [Math.min(active, panels.length - 1)] : panels.map((_, i) => i);
+  const shownMax = maxed !== null && maxed < panels.length ? maxed : null;
+  const visible = phone ? [Math.min(active, panels.length - 1)] : shownMax !== null ? [shownMax] : panels.map((_, i) => i);
+  const gridSize = !phone && shownMax !== null ? 1 : size;
 
   return (
     <ChartPaletteContext.Provider value={TERMINAL_COLORS}>
-      <div className="term-page">
-        <div className="term-bar">
-          <span className="term-prompt">
-            <span className="up">root@crypto</span>:<span className="accent">~</span>$ watch --layout={size}
-            <i className="term-cursor" aria-hidden />
-          </span>
-          <span className="term-bar-tools">
-            <span className="segmented segmented-sm" role="radiogroup" aria-label="Layout">
-              {LAYOUTS.map((n) => (
-                <button key={n} type="button" role="radio" aria-checked={n === size} className={n === size ? 'active' : ''} onClick={() => write(parsePanels(params.get('p'), n), n)}>
-                  {n}
+      <ChartSyncContext.Provider value={linked ? sync : null}>
+        <div className="term-page">
+          {booting && <BootSequence panels={size} onDone={finishBoot} />}
+          <div className="term-bar">
+            <span className="term-prompt">
+              <span className="up">root@crypto</span>:<span className="accent">~</span>$ watch --layout={size}
+              <i className="term-cursor" aria-hidden />
+            </span>
+            <span className="term-bar-tools">
+              <span className="segmented segmented-sm" role="radiogroup" aria-label="Layout">
+                {LAYOUTS.map((n) => (
+                  <button key={n} type="button" role="radio" aria-checked={n === size} className={n === size ? 'active' : ''} onClick={() => write(parsePanels(params.get('p'), n), n)}>
+                    {n}
+                  </button>
+                ))}
+              </span>
+              <LayoutMenu current={{ n: size, p: serializePanels(panels), kpi: showKpi }} onApply={apply} />
+              <button
+                type="button"
+                className={`term-toggle ${showKpi ? 'active' : ''}`}
+                aria-pressed={showKpi}
+                onClick={() =>
+                  setParams(
+                    (q) => {
+                      if (showKpi) q.set('k', '0');
+                      else q.delete('k');
+                      return q;
+                    },
+                    { replace: true },
+                  )
+                }
+              >
+                KPI
+              </button>
+              <button
+                type="button"
+                className={`term-toggle hide-sm ${linked ? 'active' : ''}`}
+                aria-pressed={linked}
+                title="Share crosshair and zoom between candle panels"
+                onClick={() => {
+                  setLinked(!linked);
+                  writeFlag('ca:link', !linked);
+                }}
+              >
+                LINK
+              </button>
+              <button
+                type="button"
+                className={`term-toggle ${crt ? 'active' : ''}`}
+                aria-pressed={crt}
+                title="Phosphor glow and scanlines"
+                onClick={() => {
+                  setCrt(!crt);
+                  writeFlag('ca:crt', !crt);
+                }}
+              >
+                CRT
+              </button>
+              <button type="button" className="term-toggle" onClick={() => void share()}>
+                Share
+              </button>
+              <LiveDot status={status} label={source ? EXCHANGES[source].name : undefined} />
+              <Clock />
+            </span>
+          </div>
+
+          <TickerStrip tickers={tickers} quote={quote} />
+          {showKpi && <KpiStrip ctx={ctx} />}
+
+          {phone && (
+            <div className="term-tabs" role="tablist">
+              {panels.map((p, i) => (
+                <button key={i} type="button" role="tab" aria-selected={i === active} className={i === active ? 'active' : ''} onClick={() => setActive(i)}>
+                  {i + 1}·{p.type}
                 </button>
               ))}
-            </span>
-            <button
-              type="button"
-              className={`term-toggle ${showKpi ? 'active' : ''}`}
-              aria-pressed={showKpi}
-              onClick={() =>
-                setParams(
-                  (q) => {
-                    if (showKpi) q.set('k', '0');
-                    else q.delete('k');
-                    return q;
-                  },
-                  { replace: true },
-                )
-              }
-            >
-              KPI
-            </button>
-            <LiveDot status={status} label={source ? EXCHANGES[source].name : undefined} />
-            <Clock />
-          </span>
-        </div>
+            </div>
+          )}
 
-        <TickerStrip tickers={tickers} quote={quote} />
-        {showKpi && <KpiStrip ctx={ctx} />}
-
-        {phone && (
-          <div className="term-tabs" role="tablist">
-            {panels.map((p, i) => (
-              <button key={i} type="button" role="tab" aria-selected={i === active} className={i === active ? 'active' : ''} onClick={() => setActive(i)}>
-                {i + 1}·{p.type}
-              </button>
+          <div className={`term-grid n${gridSize}`}>
+            {visible.map((i) => (
+              <Panel
+                key={i}
+                index={i}
+                spec={panels[i]!}
+                ctx={ctx}
+                onChange={(patch) => update(i, patch)}
+                maximised={shownMax === i}
+                onToggleMax={() => setMaxed(shownMax === i ? null : i)}
+                onHover={() => setHover(i)}
+                dropping={drag !== null && drag.over === i && drag.from !== i}
+                dragging={drag?.from === i}
+                onDragStart={() => setDrag({ from: i, over: null })}
+                onDragOver={() => setDrag((d) => (d && d.over !== i ? { ...d, over: i } : d))}
+                onDrop={() => {
+                  if (drag && drag.from !== i) swap(drag.from, i);
+                  setDrag(null);
+                }}
+                onDragEnd={() => setDrag(null)}
+              />
             ))}
           </div>
-        )}
-
-        <div className={`term-grid n${size}`}>
-          {visible.map((i) => {
-            const spec = panels[i]!;
-            return <Panel key={i} spec={spec} ctx={ctx} onChange={(patch) => update(i, patch)} />;
-          })}
         </div>
-      </div>
+      </ChartSyncContext.Provider>
     </ChartPaletteContext.Provider>
   );
 }
@@ -167,7 +300,11 @@ function TickerStrip({ tickers, quote }: { tickers: TerminalContext['tickers']; 
     const ch = pct(t.open24h, t.last);
     return (
       <span key={s} className="strip-item">
-        <b>{s}</b> {fmtPrice(t.last, quote)} <span className={ch >= 0 ? 'up' : 'down'}>{ch >= 0 ? '▲' : '▼'}{fmtPct(ch, false)}</span>
+        <b>{s}</b> {fmtPrice(t.last, quote)}{' '}
+        <span className={ch >= 0 ? 'up' : 'down'}>
+          {ch >= 0 ? '▲' : '▼'}
+          {fmtPct(ch, false)}
+        </span>
       </span>
     );
   });
@@ -182,12 +319,57 @@ function TickerStrip({ tickers, quote }: { tickers: TerminalContext['tickers']; 
   );
 }
 
-function Panel({ spec, ctx, onChange }: { spec: PanelSpec; ctx: TerminalContext; onChange: (patch: Partial<PanelSpec>) => void }) {
+interface PanelProps {
+  index: number;
+  spec: PanelSpec;
+  ctx: TerminalContext;
+  onChange: (patch: Partial<PanelSpec>) => void;
+  maximised: boolean;
+  onToggleMax: () => void;
+  onHover: () => void;
+  dropping: boolean;
+  dragging: boolean;
+  onDragStart: () => void;
+  onDragOver: () => void;
+  onDrop: () => void;
+  onDragEnd: () => void;
+}
+
+function Panel({ index, spec, ctx, onChange, maximised, onToggleMax, onHover, dropping, dragging, onDragStart, onDragOver, onDrop, onDragEnd }: PanelProps) {
   const meta = PANEL_TYPES.find((t) => t.value === spec.type)!;
   const toggle = (flag: string) => onChange({ ind: spec.ind.includes(flag) ? spec.ind.replace(flag, '') : spec.ind + flag });
   return (
-    <section className="term-panel">
-      <header className="term-panel-head">
+    <section
+      className={`term-panel ${dropping ? 'drop' : ''} ${dragging ? 'dragging' : ''}`}
+      onMouseEnter={onHover}
+      onDragOver={(e) => {
+        e.preventDefault();
+        onDragOver();
+      }}
+      onDrop={(e) => {
+        e.preventDefault();
+        onDrop();
+      }}
+    >
+      <header className="term-panel-head" onDoubleClick={(e) => e.target === e.currentTarget && onToggleMax()}>
+        <span
+          className="term-grip hide-sm"
+          draggable
+          role="button"
+          tabIndex={-1}
+          aria-label={`Drag panel ${index + 1} to swap with another`}
+          title="Drag to swap panels"
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', String(index));
+            const panel = (e.currentTarget as HTMLElement).closest('.term-panel');
+            if (panel) e.dataTransfer.setDragImage(panel, 24, 14);
+            onDragStart();
+          }}
+          onDragEnd={onDragEnd}
+        >
+          ⠿
+        </span>
         <select className="term-select" aria-label="Panel type" value={spec.type} onChange={(e) => onChange({ type: e.target.value as PanelType })}>
           {PANEL_TYPES.map((t) => (
             <option key={t.value} value={t.value}>
@@ -226,6 +408,15 @@ function Panel({ spec, ctx, onChange }: { spec: PanelSpec; ctx: TerminalContext;
             </span>
           </>
         )}
+        <button
+          type="button"
+          className="term-max hide-sm"
+          aria-label={maximised ? 'Restore panel' : 'Maximise panel'}
+          title={maximised ? 'Restore (F or Esc)' : 'Maximise (F)'}
+          onClick={onToggleMax}
+        >
+          {maximised ? '⤡' : '⤢'}
+        </button>
       </header>
       <div className="term-body">
         <PanelBody spec={spec} ctx={ctx} />
@@ -247,8 +438,12 @@ function PanelBody({ spec, ctx }: { spec: PanelSpec; ctx: TerminalContext }) {
       return <TapeBody key={spec.symbol} spec={spec} ctx={ctx} />;
     case 'flow':
       return <FlowBody key={spec.symbol} spec={spec} ctx={ctx} />;
+    case 'bubbles':
+      return <BubblesBody key={spec.symbol} spec={spec} ctx={ctx} />;
+    case 'pulse':
+      return <PulseBody spec={spec} ctx={ctx} />;
     case 'heat':
-      return <HeatBody spec={spec} ctx={ctx} />;
+      return <TreemapBody spec={spec} ctx={ctx} />;
     case 'sparks':
       return <SparksBody spec={spec} ctx={ctx} />;
     case 'movers':

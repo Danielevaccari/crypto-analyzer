@@ -122,33 +122,6 @@ export function TapeBody({ spec, ctx }: PanelProps) {
   );
 }
 
-/** Tiles coloured by 24h change; clicking one loads that coin into the first coin panel. */
-export function HeatBody({ ctx }: PanelProps) {
-  const rows = BASES.map((s) => ({ s, t: ctx.tickers[s] })).map((r) => ({ ...r, ch: r.t ? pct(r.t.open24h, r.t.last) : null }));
-  const scale = Math.max(2, ...rows.map((r) => Math.abs(r.ch ?? 0)));
-  return (
-    <div className="heat">
-      {rows.map(({ s, t, ch }) => {
-        const a = ch === null ? 0 : 0.1 + Math.min(1, Math.abs(ch) / scale) * 0.55;
-        return (
-          <button
-            key={s}
-            type="button"
-            className="heat-tile"
-            style={{ background: ch === null ? undefined : `rgba(var(--${ch >= 0 ? 'up' : 'down'}-rgb), ${a})` }}
-            onClick={() => ctx.pickSymbol(s)}
-            title={`Load ${s} into the first coin panel`}
-          >
-            <b>{s}</b>
-            <span>{t ? fmtPrice(t.last, ctx.quote) : '–'}</span>
-            <span className={ch === null ? '' : ch >= 0 ? 'up' : 'down'}>{fmtPct(ch)}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
 export function CorrBody({ ctx }: PanelProps) {
   const { series, loaded, total } = useDailySeries(ctx);
   const matrix = useMemo(() => (loaded === total ? correlationMatrix(series) : null), [series, loaded, total]);

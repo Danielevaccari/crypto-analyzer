@@ -1,8 +1,10 @@
 import { useQueries } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useNowSec } from '../../hooks/useNow';
+import { annualizedVolatility, pct } from '../../lib/analysis/stats';
 import { COINS } from '../../lib/coins';
 import { withFallback } from '../../lib/exchanges';
+import { pulseScore, type Pulse } from '../../lib/pulse';
 import type { PanelSpec } from '../../lib/terminalLayout';
 import type { ExchangeId, Quote, StreamStatus, Ticker } from '../../lib/types';
 
@@ -43,4 +45,20 @@ export function useDailySeries(ctx: TerminalContext) {
     [key],
   );
   return { series, loaded: queries.filter((q) => q.data).length, total: queries.length };
+}
+
+/** Market mood from live tickers plus 7-day change and 30-day volatility from the daily history. */
+export function usePulse(ctx: TerminalContext): Pulse {
+  const { series } = useDailySeries(ctx);
+  const tickers = ctx.tickers;
+  return useMemo(() => {
+    const changes24h = BASES.flatMap((s) => (tickers[s] ? [pct(tickers[s]!.open24h, tickers[s]!.last)] : []));
+    const changes7d = BASES.flatMap((s, i) => {
+      const c = series[i] ?? [];
+      const price = tickers[s]?.last ?? c[c.length - 1]?.close;
+      return c.length > 7 && price ? [pct(c[c.length - 8]!.close, price)] : [];
+    });
+    const vols = series.map((c) => annualizedVolatility(c.slice(-31))).filter((v): v is number => v !== null);
+    return pulseScore({ changes24h, changes7d, vols });
+  }, [tickers, series]);
 }

@@ -14,10 +14,11 @@ import {
   type Time,
   type UTCTimestamp,
 } from 'lightweight-charts';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { Point } from '../../lib/analysis/indicators';
 import { fmtCompact, fmtDate, fmtPct, fmtPrice, priceDecimals, trendClass } from '../../lib/format';
 import type { Candle, Quote } from '../../lib/types';
+import { ChartSyncContext, nearestBarIndex, type SyncMember } from './sync';
 import { alpha, baseOptions, useChartColors } from './theme';
 
 export interface Overlay {
@@ -79,6 +80,11 @@ export default function PriceChart({
   height = 420,
 }: Props) {
   const colors = useChartColors();
+  const sync = useContext(ChartSyncContext);
+  const candlesRef = useRef(candles);
+  useEffect(() => {
+    candlesRef.current = candles;
+  });
   const box = useRef<HTMLDivElement>(null);
   const chart = useRef<IChartApi | null>(null);
   const main = useRef<ISeriesApi<'Candlestick'> | ISeriesApi<'Area'> | null>(null);
@@ -154,7 +160,26 @@ export default function PriceChart({
     markerApi.current = createSeriesMarkers(main.current as ISeriesApi<'Area'>, []);
     lastTime.current = 0;
 
+    const member: SyncMember = {
+      chart: c,
+      series: main.current as ISeriesApi<'Area'>,
+      priceAt: (time) => {
+        const bars = candlesRef.current;
+        const i = nearestBarIndex(bars.map((k) => k.time), time);
+        return i < 0 ? undefined : bars[i]!.close;
+      },
+      showHover: (time) => {
+        const bars = candlesRef.current;
+        const i = time === undefined ? -1 : nearestBarIndex(bars.map((k) => k.time), time);
+        setHover(i < 0 ? null : bars[i]!);
+      },
+    };
+    const unregister = sync?.register(member);
+    const onRange = (r: { from: unknown; to: unknown } | null) => sync?.range(member, r ? { from: r.from as number, to: r.to as number } : null);
+    if (sync) c.timeScale().subscribeVisibleTimeRangeChange(onRange);
+
     const onMove = (p: MouseEventParams) => {
+      sync?.crosshair(member, p.time === undefined ? undefined : (p.time as number));
       const bar = p.time !== undefined ? p.seriesData.get(main.current!) : undefined;
       const vol = p.time !== undefined ? p.seriesData.get(volume.current!) : undefined;
       if (!bar || p.time === undefined) return setHover(null);
@@ -178,12 +203,14 @@ export default function PriceChart({
     c.subscribeCrosshairMove(onMove);
     return () => {
       c.unsubscribeCrosshairMove(onMove);
+      if (sync) c.timeScale().unsubscribeVisibleTimeRangeChange(onRange);
+      unregister?.();
       c.remove();
       chart.current = null;
     };
     // overlays is represented by overlayKey; data is applied in the effects below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [colors, type, intraday, hasRsi, overlayKey]);
+  }, [colors, type, intraday, hasRsi, overlayKey, sync]);
 
   // Main + volume data.
   useLayoutEffect(() => {
