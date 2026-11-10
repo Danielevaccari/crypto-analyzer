@@ -62,7 +62,7 @@ export const coinbase: Exchange = {
 
   async getTrades(base, quote, signal) {
     const rows = await getJson<RawTrade[]>(`${REST}/products/${product(base, quote)}/trades?limit=40`, signal);
-    return rows.reverse().map(mapTrade);
+    return rows.map(mapTrade);
   },
 
   subscribeTickers(bases, quote, onTicker, onStatus) {

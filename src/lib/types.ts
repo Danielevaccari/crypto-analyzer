@@ -43,6 +43,7 @@ export interface Exchange {
   /** Candles in [start, end] (UTC seconds), oldest first. Paginates internally. */
   getCandles(base: string, quote: Quote, interval: Interval, start: number, end: number, signal?: AbortSignal): Promise<Candle[]>;
   getTickers(bases: string[], quote: Quote, signal?: AbortSignal): Promise<Ticker[]>;
+  /** Latest trades, newest first. */
   getTrades(base: string, quote: Quote, signal?: AbortSignal): Promise<Trade[]>;
   /** Streams live price updates. Returns an unsubscribe function. */
   subscribeTickers(bases: string[], quote: Quote, onTicker: (t: Ticker) => void, onStatus?: (s: StreamStatus) => void): () => void;

@@ -69,7 +69,7 @@ export function useTrades(base: string, quote: Quote, source: ExchangeId | undef
     ex.getTrades(base, quote, ctrl.signal)
       .then((seed) => {
         seeded = true;
-        setState((prev) => ({ key, trades: merge(prev.key === key ? prev.trades : [], seed.reverse()) }));
+        setState((prev) => ({ key, trades: merge(prev.key === key ? prev.trades : [], seed) }));
       })
       .catch(() => {
         seeded = true;
