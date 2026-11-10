@@ -1,7 +1,11 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router';
 import ErrorBoundary from './components/ErrorBoundary';
+import AlertsMenu from './components/AlertsMenu';
+import CommandPalette from './components/CommandPalette';
+import HelpOverlay from './components/HelpOverlay';
 import { Segmented } from './components/ui';
+import { emit, EVENTS } from './components/useCommands';
 import type { ExchangeId, Quote } from './lib/types';
 import MarketsPage from './pages/MarketsPage';
 import { useSettings } from './settings/context';
@@ -37,6 +41,14 @@ export default function App() {
           <NavLink to="/terminal">Terminal</NavLink>
         </nav>
         <div className="header-tools">
+          <button type="button" className="btn cmdk-btn" onClick={() => emit(EVENTS.palette)} aria-label="Open command palette">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.5-3.5" />
+            </svg>
+            <span className="hide-sm">Search</span>
+            <kbd className="hide-sm">Ctrl K</kbd>
+          </button>
           <Segmented<Quote>
             label="Currency"
             size="sm"
@@ -51,6 +63,7 @@ export default function App() {
             <option value="coinbase">Coinbase</option>
             <option value="binance">Binance</option>
           </select>
+          <AlertsMenu />
           <button type="button" className="icon-btn" onClick={toggleTheme} aria-label={`Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} mode`}>
             {resolvedTheme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
@@ -71,6 +84,8 @@ export default function App() {
         </Suspense>
         </ErrorBoundary>
       </main>
+      <CommandPalette />
+      <HelpOverlay />
     </div>
   );
 }

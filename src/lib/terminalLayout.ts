@@ -1,7 +1,7 @@
 import { COIN_BY_SYMBOL } from './coins';
 import type { Interval } from './types';
 
-export type PanelType = 'candles' | 'depth' | 'book' | 'tape' | 'flow' | 'heat' | 'sparks' | 'movers' | 'volume' | 'range' | 'corr' | 'stats' | 'spread';
+export type PanelType = 'candles' | 'depth' | 'book' | 'tape' | 'flow' | 'bubbles' | 'pulse' | 'heat' | 'sparks' | 'movers' | 'volume' | 'range' | 'corr' | 'stats' | 'spread';
 
 export interface PanelSpec {
   type: PanelType;
@@ -17,7 +17,9 @@ export const PANEL_TYPES: { value: PanelType; label: string; needsSymbol: boolea
   { value: 'book', label: 'Order book', needsSymbol: true },
   { value: 'tape', label: 'Trades tape', needsSymbol: true },
   { value: 'flow', label: 'Trade flow', needsSymbol: true },
-  { value: 'heat', label: 'Heatmap', needsSymbol: false },
+  { value: 'bubbles', label: 'Whale bubbles', needsSymbol: true },
+  { value: 'pulse', label: 'Market pulse', needsSymbol: false },
+  { value: 'heat', label: 'Volume treemap', needsSymbol: false },
   { value: 'sparks', label: '7d sparklines', needsSymbol: false },
   { value: 'movers', label: 'Movers', needsSymbol: false },
   { value: 'volume', label: 'Volume share', needsSymbol: false },

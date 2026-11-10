@@ -3,7 +3,9 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
 import App from './App';
+import { AlertsProvider } from './alerts/AlertsProvider';
 import { SettingsProvider } from './settings/SettingsProvider';
+import { ToastProvider } from './toast/ToastProvider';
 import './index.css';
 
 const queryClient = new QueryClient({
@@ -21,9 +23,13 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <SettingsProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <ToastProvider>
+          <AlertsProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </AlertsProvider>
+        </ToastProvider>
       </SettingsProvider>
     </QueryClientProvider>
   </StrictMode>,
